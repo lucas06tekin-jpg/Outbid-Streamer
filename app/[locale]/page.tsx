@@ -70,34 +70,34 @@ export default async function HomePage({
 
   return (
     <div>
-      <div className="border-b border-border bg-surface-2/50">
-        <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
-          <LiveDashboard
-            initialStats={{
-              onlineCount,
-              totalViews,
-              latestActivity,
-              rankedBids: allPaidBids.map((s) => s.currentBid),
-            }}
-            incrementOre={INCREMENT_ORE}
-          />
-        </div>
-      </div>
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px] lg:items-start">
+          {topStreamer && (
+            <div>
+              <FeaturedStream streamer={topStreamer} parentHost={parentHost} />
 
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10">
-        {topStreamer && (
-          <div className="mb-10 mx-auto max-w-3xl">
-            <FeaturedStream streamer={topStreamer} parentHost={parentHost} />
+              {runnersUp.length > 0 && (
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {runnersUp.map((s, i) => (
+                    <RunnerUpStream key={s.id} streamer={s} rank={i + 2} parentHost={parentHost} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
-            {runnersUp.length > 0 && (
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {runnersUp.map((s, i) => (
-                  <RunnerUpStream key={s.id} streamer={s} rank={i + 2} parentHost={parentHost} />
-                ))}
-              </div>
-            )}
+          <div className="rounded-xl border border-border bg-surface-2/50 p-5">
+            <LiveDashboard
+              initialStats={{
+                onlineCount,
+                totalViews,
+                latestActivity,
+                rankedBids: allPaidBids.map((s) => s.currentBid),
+              }}
+              incrementOre={INCREMENT_ORE}
+            />
           </div>
-        )}
+        </div>
 
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>

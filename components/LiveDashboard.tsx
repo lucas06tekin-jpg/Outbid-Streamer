@@ -113,7 +113,7 @@ export default function LiveDashboard({
           −
         </button>
 
-        <h1 className="text-center font-display text-3xl font-semibold tracking-tight sm:text-5xl">
+        <h1 className="text-center font-display text-2xl font-semibold tracking-tight sm:text-3xl">
           {targetRank === 1
             ? t.rich("claimHeadline1", {
                 amount: () => <span className="text-accent">{formatOre(minBid, locale)}</span>,
