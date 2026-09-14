@@ -2,62 +2,85 @@
 
 import { useEffect, useRef } from "react";
 
-const EASE = 0.14;
-const OFFSET_X = 18;
-const OFFSET_Y = 22;
+const HOP_DURATION_MS = 550;
+const HOP_ARC_PX = 26;
+const PAUSE_MIN_MS = 1200;
+const PAUSE_MAX_MS = 3200;
+const MARGIN = 40;
+
+function easeInOutQuad(t: number) {
+  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+}
 
 export default function CursorMascot() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const flipRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (coarsePointer || reducedMotion) return;
+    if (reducedMotion) return;
 
     const wrapper = wrapperRef.current;
     const flip = flipRef.current;
-    if (!wrapper || !flip) return;
+    const body = bodyRef.current;
+    if (!wrapper || !flip || !body) return;
 
-    let targetX = window.innerWidth / 2;
-    let targetY = window.innerHeight / 2;
-    let x = targetX;
-    let y = targetY;
-    let facing = 1;
     let raf = 0;
-    let visible = false;
+    let timeout: ReturnType<typeof setTimeout>;
+    let cancelled = false;
 
-    const onMove = (e: MouseEvent) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
-      if (!visible) {
-        x = targetX;
-        y = targetY;
-        visible = true;
-        wrapper.style.opacity = "1";
-      }
-    };
+    let x = Math.random() * (window.innerWidth - 2 * MARGIN) + MARGIN;
+    let y = Math.random() * (window.innerHeight - 2 * MARGIN) + MARGIN;
+    wrapper.style.transform = `translate(${x}px, ${y}px)`;
+    wrapper.style.opacity = "1";
 
-    const tick = () => {
-      const dx = targetX - x;
-      x += dx * EASE;
-      y += (targetY - y) * EASE;
+    function pickTarget() {
+      const nx = Math.random() * (window.innerWidth - 2 * MARGIN) + MARGIN;
+      const ny = Math.random() * (window.innerHeight - 2 * MARGIN) + MARGIN;
+      return { nx, ny };
+    }
 
-      if (Math.abs(dx) > 0.5) {
-        facing = dx < 0 ? -1 : 1;
-        flip.style.transform = `scaleX(${facing})`;
-      }
+    function hop() {
+      if (cancelled) return;
+      const startX = x;
+      const startY = y;
+      const { nx, ny } = pickTarget();
+      flip!.style.transform = `scaleX(${nx < startX ? -1 : 1})`;
 
-      wrapper.style.transform = `translate(${x + OFFSET_X}px, ${y + OFFSET_Y}px)`;
-      raf = requestAnimationFrame(tick);
-    };
+      const start = performance.now();
 
-    window.addEventListener("mousemove", onMove);
-    raf = requestAnimationFrame(tick);
+      const step = (now: number) => {
+        if (cancelled) return;
+        const elapsed = now - start;
+        const progress = Math.min(1, elapsed / HOP_DURATION_MS);
+        const eased = easeInOutQuad(progress);
+
+        x = startX + (nx - startX) * eased;
+        y = startY + (ny - startY) * eased;
+        const arc = Math.sin(progress * Math.PI) * HOP_ARC_PX;
+        const squash = 1 - Math.sin(progress * Math.PI) * 0.15;
+
+        wrapper!.style.transform = `translate(${x}px, ${y - arc}px)`;
+        body!.style.transform = `scaleY(${squash}) scaleX(${1 + (1 - squash) * 0.6})`;
+
+        if (progress < 1) {
+          raf = requestAnimationFrame(step);
+        } else {
+          body!.style.transform = "scaleY(1) scaleX(1)";
+          timeout = setTimeout(hop, PAUSE_MIN_MS + Math.random() * (PAUSE_MAX_MS - PAUSE_MIN_MS));
+        }
+      };
+
+      raf = requestAnimationFrame(step);
+    }
+
+    timeout = setTimeout(hop, 800);
 
     return () => {
-      window.removeEventListener("mousemove", onMove);
+      cancelled = true;
       cancelAnimationFrame(raf);
+      clearTimeout(timeout);
     };
   }, []);
 
@@ -65,11 +88,11 @@ export default function CursorMascot() {
     <div
       ref={wrapperRef}
       aria-hidden="true"
-      className="pointer-events-none fixed left-0 top-0 z-50 opacity-0 transition-opacity duration-300"
+      className="pointer-events-none fixed left-0 top-0 z-50 opacity-0"
       style={{ willChange: "transform" }}
     >
       <div ref={flipRef}>
-        <div className="animate-mascot-bob">
+        <div ref={bodyRef} style={{ transformOrigin: "50% 100%" }}>
           <svg width="40" height="34" viewBox="0 0 40 34" fill="none" xmlns="http://www.w3.org/2000/svg">
             <ellipse cx="19" cy="27" rx="4.5" ry="2.4" fill="#5b3f2e" />
             <ellipse cx="29" cy="27" rx="4.5" ry="2.4" fill="#5b3f2e" />

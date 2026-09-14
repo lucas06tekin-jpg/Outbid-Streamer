@@ -1,7 +1,7 @@
 export const VAT_RATE = 0.25;
 
 /** Formats an amount in öre as a Swedish kronor string, e.g. 1270000 -> "12 700 kr" */
-export function formatOre(ore: number, locale: string = "sv-SE"): string {
+export function formatOre(ore: number, locale: string = "en"): string {
   const kr = Math.round(ore / 100);
   return `${new Intl.NumberFormat(locale).format(kr)} kr`;
 }
@@ -18,7 +18,7 @@ export function splitVatInclusive(totalOre: number) {
 }
 
 /** Formats a past timestamp as a short relative string, e.g. "4 min sedan" / "4 min ago". */
-export function formatRelativeTime(iso: string, locale: string = "sv-SE"): string {
+export function formatRelativeTime(iso: string, locale: string = "en"): string {
   const diffMs = Date.now() - new Date(iso).getTime();
   const diffSec = Math.max(1, Math.round(diffMs / 1000));
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "always", style: "short" });

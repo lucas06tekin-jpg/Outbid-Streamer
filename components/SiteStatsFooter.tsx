@@ -2,10 +2,11 @@ import { getTranslations } from "next-intl/server";
 import { getSiteSummary } from "@/lib/stats";
 import { formatOre } from "@/lib/format";
 
-export default async function SiteStatsFooter({ locale }: { locale: string }) {
+const numberFmt = new Intl.NumberFormat("en");
+
+export default async function SiteStatsFooter() {
   const t = await getTranslations("siteSummary");
   const summary = await getSiteSummary();
-  const numberFmt = new Intl.NumberFormat(locale);
 
   return (
     <div className="mt-14 border-t border-border pt-10 text-center">
@@ -22,7 +23,7 @@ export default async function SiteStatsFooter({ locale }: { locale: string }) {
 
         <div className="rounded-xl border border-border bg-surface px-4 py-5">
           <p className="font-display text-2xl font-semibold tracking-tight text-accent">
-            {formatOre(summary.revenueOre, locale)}
+            {formatOre(summary.revenueOre)}
           </p>
           <p className="mt-1 text-xs text-muted">{t("revenue")}</p>
         </div>

@@ -149,7 +149,7 @@ export default async function HomePage({
 
         <LeaderboardSearch streamers={streamers} initialQuery={q} />
 
-        <SiteStatsFooter locale={locale} />
+        <SiteStatsFooter />
       </div>
     </div>
   );

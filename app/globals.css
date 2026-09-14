@@ -131,28 +131,11 @@ body {
   animation: toast-in 0.25s ease-out;
 }
 
-@keyframes mascot-bob {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-2deg);
-  }
-  50% {
-    transform: translateY(-3px) rotate(2deg);
-  }
-}
-
-.animate-mascot-bob {
-  animation: mascot-bob 1.6s ease-in-out infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .animate-ping {
     animation: none;
   }
   .animate-toast-in {
-    animation: none;
-  }
-  .animate-mascot-bob {
     animation: none;
   }
 }
