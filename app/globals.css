@@ -56,7 +56,7 @@
   --color-live: var(--live);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-inter);
+  --font-display: var(--font-fraunces);
 }
 
 body {

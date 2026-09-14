@@ -1,4 +1,4 @@
-import { Inter, Geist_Mono } from "next/font/google";
+import { Inter, Geist_Mono, Fraunces } from "next/font/google";
 import { getLocale } from "next-intl/server";
 import "./globals.css";
 
@@ -12,6 +12,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  axes: ["opsz", "SOFT", "WONK"],
+});
+
 export default async function RootLayout({
   children,
 }: {
@@ -23,7 +29,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       data-theme="light"
-      className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <head>
         <script
