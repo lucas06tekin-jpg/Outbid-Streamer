@@ -64,19 +64,6 @@ body {
   outline-offset: 2px;
 }
 
-@keyframes ticker {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-ticker {
-  animation: ticker 28s linear infinite;
-}
-
 @keyframes toast-in {
   from {
     transform: translateY(8px);
@@ -93,9 +80,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-ticker {
-    animation: none;
-  }
   .animate-ping {
     animation: none;
   }

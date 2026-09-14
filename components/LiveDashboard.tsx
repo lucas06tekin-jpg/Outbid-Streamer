@@ -139,7 +139,7 @@ export default function LiveDashboard({
         {t("claimSubtext", { floor: formatOre(incrementOre, locale) })}
       </p>
 
-      <ActivityTicker items={stats.latestActivity} />
+      <ActivityFeed items={stats.latestActivity} />
       <ToastStack items={toasts} onDismiss={(id) => setToasts((prev) => prev.filter((t) => t.id !== id))} />
     </div>
   );
@@ -196,9 +196,16 @@ function ToastStack({
   );
 }
 
-function ActivityTicker({ items }: { items: ActivityItem[] }) {
+function ActivityFeed({ items }: { items: ActivityItem[] }) {
   const t = useTranslations("live");
   const locale = useLocale();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const oldestFirst = useMemo(() => [...items].reverse(), [items]);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [items]);
 
   if (items.length === 0) {
     return (
@@ -206,28 +213,27 @@ function ActivityTicker({ items }: { items: ActivityItem[] }) {
     );
   }
 
-  const loop = [...items, ...items];
-
   return (
     <div className="mt-10">
       <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">
         {t("activityTitle")}
       </p>
-      <div className="group relative overflow-hidden rounded-xl border border-border bg-surface [mask-image:linear-gradient(to_right,transparent,black_24px,black_calc(100%-24px),transparent)]">
-        <div className="flex w-max animate-ticker gap-3 py-3 group-hover:[animation-play-state:paused] motion-reduce:animate-none motion-reduce:flex-wrap">
-          {loop.map((item, i) => (
-            <Link
-              key={`${item.id}-${i}`}
-              href={`/kanal/${item.streamerSlug}`}
-              className="flex shrink-0 items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-2 text-xs whitespace-nowrap hover:border-accent"
-            >
-              <span className="font-mono font-semibold text-accent">#{item.rank}</span>
-              <span className="font-medium">{item.streamerName}</span>
-              <span className="text-muted">{formatOre(item.amount, locale)}</span>
-              <span className="text-muted">· {formatRelativeTime(item.createdAt, locale)}</span>
-            </Link>
-          ))}
-        </div>
+      <div
+        ref={scrollRef}
+        className="flex max-h-72 flex-col gap-2 overflow-y-auto rounded-xl border border-border bg-surface p-3"
+      >
+        {oldestFirst.map((item) => (
+          <Link
+            key={item.id}
+            href={`/kanal/${item.streamerSlug}`}
+            className="animate-toast-in flex shrink-0 items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-2 text-xs hover:border-accent"
+          >
+            <span className="shrink-0 font-mono font-semibold text-accent">#{item.rank}</span>
+            <span className="min-w-0 flex-1 truncate font-medium">{item.streamerName}</span>
+            <span className="shrink-0 text-muted">{formatOre(item.amount, locale)}</span>
+            <span className="shrink-0 text-muted">· {formatRelativeTime(item.createdAt, locale)}</span>
+          </Link>
+        ))}
       </div>
     </div>
   );
