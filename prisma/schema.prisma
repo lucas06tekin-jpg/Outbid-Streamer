@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Streamer {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  platform    String
+  url         String
+  description String
+  category    String
+  imageUrl    String?
+  email       String
+  currentBid  Int      @default(0)
+  status      String   @default("PENDING")
+  clicks      Int      @default(0)
+  vatNumber   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  bids        Bid[]
+
+  @@index([status, currentBid])
+  @@index([category])
+  @@index([email])
+}
+
+model Bid {
+  id              String   @id @default(cuid())
+  streamerId      String
+  streamer        Streamer @relation(fields: [streamerId], references: [id], onDelete: Cascade)
+  amount          Int
+  stripeSessionId String   @unique
+  status          String   @default("PENDING")
+  createdAt       DateTime @default(now())
+
+  @@index([streamerId])
+}
+
+model SiteStat {
+  id         Int @id @default(1)
+  totalViews Int @default(0)
+}
+
+model Heartbeat {
+  sessionId String   @id
+  lastSeen  DateTime @updatedAt
+
+  @@index([lastSeen])
+}

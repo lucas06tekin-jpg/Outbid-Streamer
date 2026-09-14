@@ -1,0 +1,117 @@
+import { Link } from "@/i18n/navigation";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { prisma } from "@/lib/prisma";
+import { CATEGORIES, categoryLabel } from "@/lib/categories";
+import LeaderboardSearch from "@/components/LeaderboardSearch";
+import LiveDashboard from "@/components/LiveDashboard";
+import { getOnlineCount, getTotalViews, getLatestActivity } from "@/lib/stats";
+
+const INCREMENT_ORE = Number(process.env.MIN_BID_INCREMENT_ORE ?? 100);
+
+export default async function HomePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ category?: string }>;
+}) {
+  const { locale } = await params;
+  const { category } = await searchParams;
+  setRequestLocale(locale);
+  const t = await getTranslations("home");
+
+  const [streamers, allPaidBids, onlineCount, totalViews, latestActivity] = await Promise.all([
+    prisma.streamer.findMany({
+      where: {
+        status: "PAID",
+        ...(category ? { category } : {}),
+      },
+      orderBy: { currentBid: "desc" },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        platform: true,
+        description: true,
+        category: true,
+        imageUrl: true,
+        currentBid: true,
+        clicks: true,
+      },
+    }),
+    prisma.streamer.findMany({
+      where: { status: "PAID" },
+      orderBy: { currentBid: "desc" },
+      select: { currentBid: true },
+      take: 20,
+    }),
+    getOnlineCount(),
+    getTotalViews(),
+    getLatestActivity(10),
+  ]);
+
+  return (
+    <div>
+      <div className="border-b border-border bg-surface-2/50">
+        <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
+          <LiveDashboard
+            initialStats={{
+              onlineCount,
+              totalViews,
+              latestActivity,
+              rankedBids: allPaidBids.map((s) => s.currentBid),
+            }}
+            incrementOre={INCREMENT_ORE}
+          />
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+              {t("title")}
+            </h2>
+            <p className="mt-1 max-w-xl text-sm text-muted">{t("subtitle")}</p>
+          </div>
+          <Link
+            href="/buda"
+            className="shrink-0 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground hover:brightness-110 transition"
+          >
+            {t("ctaButton")}
+          </Link>
+        </div>
+
+        <div className="mb-6 flex flex-wrap gap-2">
+          <Link
+            href="/"
+            scroll={false}
+            className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
+              !category
+                ? "bg-accent text-accent-foreground font-semibold"
+                : "bg-surface-2 text-muted hover:text-foreground"
+            }`}
+          >
+            {t("allCategories")}
+          </Link>
+          {CATEGORIES.map((c) => (
+            <Link
+              key={c.slug}
+              href={{ pathname: "/", query: { category: c.slug } }}
+              scroll={false}
+              className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
+                category === c.slug
+                  ? "bg-accent text-accent-foreground font-semibold"
+                  : "bg-surface-2 text-muted hover:text-foreground"
+              }`}
+            >
+              {categoryLabel(c.slug, locale)}
+            </Link>
+          ))}
+        </div>
+
+        <LeaderboardSearch streamers={streamers} />
+      </div>
+    </div>
+  );
+}

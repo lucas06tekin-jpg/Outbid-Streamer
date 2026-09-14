@@ -1,0 +1,156 @@
+{
+  "meta": {
+    "siteName": "StreamTopp",
+    "tagline": "Topplistan för livestreamers. Buda om du vill synas högst upp."
+  },
+  "nav": {
+    "home": "Topplistan",
+    "categories": "Kategorier",
+    "about": "Om",
+    "bid": "Buda dig till toppen",
+    "bidShort": "Buda",
+    "terms": "Villkor",
+    "privacy": "Integritetspolicy",
+    "cookies": "Cookies",
+    "contact": "Kontakt",
+    "admin": "Admin"
+  },
+  "categoriesPage": {
+    "title": "Kategorier",
+    "subtitle": "Bläddra bland streamers per kategori.",
+    "count": "{count, plural, =0 {Inga streamers} =1 {1 streamer} other {# streamers}}"
+  },
+  "home": {
+    "title": "Betala för att synas",
+    "subtitle": "En topplista för livestreamers. Vem som helst kan buda över den som ligger etta — högst bud vinner platsen och syns för flest tittare.",
+    "allCategories": "Alla kategorier",
+    "rank": "Plats",
+    "category": "Kategori",
+    "bidLabel": "Bud",
+    "clicks": "Klick",
+    "visit": "Titta",
+    "claim": "Gå om",
+    "empty": "Inga streamers ännu i den här kategorin. Bli den första!",
+    "searchPlaceholder": "Sök bland streamers...",
+    "searchClear": "Rensa sökning",
+    "searchEmpty": "Inga streamers matchar \"{query}\".",
+    "ctaTitle": "Vill du synas överst?",
+    "ctaBody": "Lägg ett bud och gå om nuvarande etta direkt efter betalning.",
+    "ctaButton": "Buda nu"
+  },
+  "bidForm": {
+    "title": "Buda dig till toppen",
+    "intro": "Fyll i formuläret nedan. Ditt bud aktiveras direkt efter godkänd betalning och din kanal klättrar omedelbart till rätt plats på topplistan.",
+    "name": "Kanal-/streamernamn",
+    "platform": "Plattform",
+    "url": "Länk till din kanal",
+    "description": "Kort beskrivning",
+    "descriptionHint": "Max 150 tecken",
+    "category": "Kategori",
+    "imageUrl": "Profilbild/logotyp",
+    "imageUrlOptional": "(valfritt)",
+    "logoUpload": "Ladda upp bild",
+    "logoReplace": "Byt bild",
+    "logoUploading": "Laddar upp...",
+    "logoHint": "PNG, JPG, WEBP eller SVG, max 2 MB.",
+    "email": "E-post",
+    "emailHint": "Används för kvitto och kontakt om din listning",
+    "vatNumber": "VAT-nummer / org.nr",
+    "vatNumberOptional": "(valfritt, för registrerade streamers)",
+    "bidAmount": "Ditt bud (kr, inkl. moms)",
+    "minBidHint": "Minsta bud för denna plats: {amount}",
+    "withdrawal": "Jag förstår att tjänsten aktiveras direkt och att jag därmed avstår min ångerrätt enligt distansavtalslagen.",
+    "terms": "Jag godkänner",
+    "termsLink": "villkoren",
+    "and": "och",
+    "privacyLink": "integritetspolicyn",
+    "submit": "Gå till betalning",
+    "submitting": "Skapar betalning...",
+    "vatNote": "Priset ovan är inkl. 25% moms.",
+    "errors": {
+      "required": "Fältet är obligatoriskt",
+      "url": "Ange en giltig URL (https://...)",
+      "email": "Ange en giltig e-postadress",
+      "description": "Beskrivningen får vara max 150 tecken",
+      "bidTooLow": "Ditt bud är för lågt. Minsta bud just nu är {amount}.",
+      "withdrawal": "Du måste bekräfta att du avstår ångerrätten för att gå vidare.",
+      "terms": "Du måste godkänna villkoren och integritetspolicyn.",
+      "logoTooLarge": "Bilden är för stor. Max 2 MB.",
+      "logoInvalidType": "Filtypen stöds inte. Använd PNG, JPG, WEBP eller SVG.",
+      "generic": "Något gick fel. Försök igen."
+    }
+  },
+  "streamer": {
+    "backToList": "Tillbaka till topplistan",
+    "currentBid": "Nuvarande bud",
+    "category": "Kategori",
+    "clicks": "Klick",
+    "visit": "Titta på kanalen",
+    "claimThisRank": "Buda om den här platsen",
+    "notFound": "Streamern hittades inte."
+  },
+  "notFound": {
+    "title": "Sidan hittades inte",
+    "body": "Länken kan vara felstavad eller sidan kan ha tagits bort.",
+    "cta": "Till topplistan"
+  },
+  "errorPage": {
+    "title": "Något gick fel",
+    "body": "Ett oväntat fel inträffade. Försök igen om en liten stund.",
+    "retry": "Försök igen",
+    "home": "Till topplistan"
+  },
+  "thanks": {
+    "title": "Tack för ditt bud!",
+    "paid": "Betalningen genomfördes och din plats på topplistan är aktiv.",
+    "pending": "Vi väntar på bekräftelse från Stripe. Sidan uppdateras automatiskt inom kort.",
+    "failed": "Betalningen kunde inte bekräftas. Kontakta oss om beloppet drogs.",
+    "backToList": "Till topplistan",
+    "receiptNote": "Ett kvitto med momsspecifikation skickas till din e-post."
+  },
+  "footer": {
+    "support": "Kontakt",
+    "rights": "Alla rättigheter förbehållna."
+  },
+  "cookieBanner": {
+    "text": "Vi använder endast nödvändiga cookies för att sajten ska fungera. Vi använder inga analys- eller marknadsföringscookies utan ditt samtycke.",
+    "accept": "OK, jag förstår",
+    "readMore": "Läs mer"
+  },
+  "legal": {
+    "termsTitle": "Villkor",
+    "privacyTitle": "Integritetspolicy",
+    "cookiesTitle": "Cookies"
+  },
+  "contact": {
+    "title": "Kontakt",
+    "intro": "Har du frågor om din listning, betalning eller vill begära radering av dina uppgifter? Kontakta oss."
+  },
+  "live": {
+    "online": "{count} online",
+    "totalViews": "{count} visningar sedan lansering",
+    "claimHeadline1": "Bli etta för <amount></amount>",
+    "claimHeadlineN": "Ta plats #{rank} för <amount></amount>",
+    "claimSubtext": "Nya platser börjar på {floor}. Använd +/- för att se priset för andra placeringar.",
+    "prevRank": "Visa lägre placering",
+    "nextRank": "Visa högre placering",
+    "activityTitle": "Senaste aktivitet",
+    "activityEmpty": "Inga bud än — bli den första att synas här.",
+    "toastMessage": "{name} klev just in på plats #{rank} för {amount}",
+    "toastDismiss": "Stäng"
+  },
+  "admin": {
+    "title": "Admin",
+    "login": "Logga in",
+    "password": "Lösenord",
+    "wrongPassword": "Fel lösenord.",
+    "logout": "Logga ut",
+    "pending": "Väntar på granskning",
+    "paid": "Aktiva",
+    "rejected": "Avvisade",
+    "reject": "Avvisa",
+    "approve": "Godkänn",
+    "delete": "Radera permanent (GDPR)",
+    "noItems": "Inga listningar här."
+  }
+}
