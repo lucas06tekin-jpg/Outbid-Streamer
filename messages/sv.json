@@ -80,6 +80,12 @@
       "generic": "Något gick fel. Försök igen."
     }
   },
+  "featured": {
+    "liveNow": "{name} streamar live nu",
+    "noPreview": "Förhandsvisning stöds inte för den här plattformen än.",
+    "watchLive": "Se live",
+    "viewProfile": "Visa profil"
+  },
   "streamer": {
     "backToList": "Tillbaka till topplistan",
     "currentBid": "Nuvarande bud",

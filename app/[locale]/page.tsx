@@ -1,9 +1,11 @@
+import { headers } from "next/headers";
 import { Link } from "@/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { CATEGORIES, categoryLabel } from "@/lib/categories";
 import LeaderboardSearch from "@/components/LeaderboardSearch";
 import LiveDashboard from "@/components/LiveDashboard";
+import FeaturedStream from "@/components/FeaturedStream";
 import { getOnlineCount, getTotalViews, getLatestActivity } from "@/lib/stats";
 
 const INCREMENT_ORE = Number(process.env.MIN_BID_INCREMENT_ORE ?? 100);
@@ -20,7 +22,7 @@ export default async function HomePage({
   setRequestLocale(locale);
   const t = await getTranslations("home");
 
-  const [streamers, allPaidBids, onlineCount, totalViews, latestActivity] = await Promise.all([
+  const [streamers, allPaidBids, topStreamer, onlineCount, totalViews, latestActivity] = await Promise.all([
     prisma.streamer.findMany({
       where: {
         status: "PAID",
@@ -45,10 +47,18 @@ export default async function HomePage({
       select: { currentBid: true },
       take: 20,
     }),
+    prisma.streamer.findFirst({
+      where: { status: "PAID" },
+      orderBy: { currentBid: "desc" },
+      select: { id: true, slug: true, name: true, platform: true, url: true },
+    }),
     getOnlineCount(),
     getTotalViews(),
     getLatestActivity(10),
   ]);
+
+  const requestHost = (await headers()).get("host") ?? "localhost";
+  const parentHost = requestHost.split(":")[0];
 
   return (
     <div>
@@ -67,6 +77,12 @@ export default async function HomePage({
       </div>
 
       <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10">
+        {topStreamer && (
+          <div className="mb-10 mx-auto max-w-3xl">
+            <FeaturedStream streamer={topStreamer} parentHost={parentHost} />
+          </div>
+        )}
+
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
