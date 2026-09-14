@@ -73,7 +73,11 @@ export default async function HomePage({
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10">
         <div className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px] lg:items-start">
           {topStreamer && (
-            <div>
+            <div className="relative">
+              <div
+                aria-hidden="true"
+                className="stage-glow pointer-events-none absolute -inset-x-8 -inset-y-12 -z-10 blur-3xl"
+              />
               <FeaturedStream streamer={topStreamer} parentHost={parentHost} />
 
               {runnersUp.length > 0 && (

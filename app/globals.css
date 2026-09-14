@@ -36,8 +36,14 @@
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(1100px 520px at 50% -8%, rgba(249, 115, 22, 0.07), transparent 65%),
+    var(--background);
   color: var(--foreground);
+}
+
+.stage-glow {
+  background: radial-gradient(55% 55% at 50% 18%, rgba(249, 115, 22, 0.32), transparent 72%);
 }
 
 @layer components {
