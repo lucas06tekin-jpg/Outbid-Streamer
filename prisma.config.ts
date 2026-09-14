@@ -7,9 +7,9 @@ export default defineConfig({
     path: "prisma/migrations",
     seed: "tsx prisma/seed.ts",
   },
-  // CLI-kommandon (migrate, studio, db seed) pratar direkt mot Postgres,
-  // förbi Supabases connection pooler. Appen i körtid (lib/prisma.ts) använder
-  // istället den poolade DATABASE_URL via driver-adaptern.
+  // CLI commands (migrate, studio, db seed) talk directly to Postgres,
+  // bypassing Supabase's connection pooler. The app at runtime (lib/prisma.ts)
+  // instead uses the pooled DATABASE_URL via the driver adapter.
   datasource: {
     url: env("DIRECT_URL"),
   },

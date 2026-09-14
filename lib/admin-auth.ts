@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from "crypto";
 
 const COOKIE_NAME = "admin_session";
-const SESSION_TTL_MS = 1000 * 60 * 60 * 12; // 12 timmar
+const SESSION_TTL_MS = 1000 * 60 * 60 * 12; // 12 hours
 
 function secret(): string {
   return process.env.ADMIN_PASSWORD ?? "";

@@ -21,7 +21,7 @@ export default async function ContactPage({
   const t = await getTranslations("contact");
   const f = await getTranslations("footer");
 
-  const supportEmail = process.env.SUPPORT_EMAIL || "support@example.se";
+  const supportEmail = process.env.SUPPORT_EMAIL || "support@example.com";
 
   return (
     <div className="mx-auto max-w-2xl px-4 sm:px-6 py-10">

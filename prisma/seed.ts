@@ -11,7 +11,7 @@ const streamers = [
     name: "NordicGaming",
     platform: "twitch",
     url: "https://twitch.tv/example-nordicgaming",
-    description: "Dagliga FPS-strömmar och ranked-grind med svensk chatt.",
+    description: "Daily FPS streams and ranked grind with a Nordic chat.",
     category: "gaming",
     imageUrl: null,
     email: "demo@nordicgaming.example",
@@ -24,7 +24,7 @@ const streamers = [
     name: "Kaffeprat",
     platform: "kick",
     url: "https://kick.com/example-kaffeprat",
-    description: "Avslappnad Just Chatting över en kopp kaffe varje kväll.",
+    description: "Laid-back Just Chatting over a cup of coffee every evening.",
     category: "just-chatting",
     imageUrl: null,
     email: "demo@kaffeprat.example",
@@ -37,8 +37,8 @@ const streamers = [
     name: "Melodimakarn",
     platform: "youtube",
     url: "https://youtube.com/@example-melodimakarn/live",
-    description: "Livemusik, låtskrivande och publikens önskelåtar.",
-    category: "musik",
+    description: "Live music, songwriting, and audience song requests.",
+    category: "music",
     imageUrl: null,
     email: "demo@melodimakarn.example",
     currentBid: 54900,
@@ -50,7 +50,7 @@ const streamers = [
     name: "IRL Sverige",
     platform: "tiktok",
     url: "https://tiktok.com/@example-irlsverige/live",
-    description: "Utforskar svenska städer live, en promenad i taget.",
+    description: "Exploring Swedish cities live, one walk at a time.",
     category: "irl",
     imageUrl: null,
     email: "demo@irlsverige.example",
@@ -68,7 +68,7 @@ async function main() {
       create: streamer,
     });
   }
-  console.log(`Seedade ${streamers.length} streamers.`);
+  console.log(`Seeded ${streamers.length} streamers.`);
 }
 
 main()

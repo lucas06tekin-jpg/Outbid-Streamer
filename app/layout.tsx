@@ -1,21 +1,15 @@
-import { Geist, Geist_Mono, Fraunces } from "next/font/google";
+import { Inter, Geist_Mono } from "next/font/google";
 import { getLocale } from "next-intl/server";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-});
-
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  axes: ["opsz", "SOFT", "WONK"],
 });
 
 export default async function RootLayout({
@@ -29,7 +23,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       data-theme="light"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
         <script
@@ -37,7 +31,7 @@ export default async function RootLayout({
           // immediately instead of flashing the light default first.
           dangerouslySetInnerHTML={{
             __html:
-              "(function(){try{var t=localStorage.getItem('streamtopp_theme');if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');}}catch(e){}})();",
+              "(function(){try{var t=localStorage.getItem('streamerbid_theme');if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');}}catch(e){}})();",
           }}
         />
       </head>

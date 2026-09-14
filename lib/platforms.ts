@@ -8,7 +8,7 @@ export const PLATFORMS: Platform[] = [
   { slug: "youtube", label: "YouTube" },
   { slug: "kick", label: "Kick" },
   { slug: "tiktok", label: "TikTok" },
-  { slug: "ovrigt", label: "Annan plattform" },
+  { slug: "other", label: "Other platform" },
 ];
 
 export function platformLabel(slug: string): string {

@@ -1,23 +1,20 @@
 export type Category = {
   slug: string;
-  sv: string;
-  en: string;
+  label: string;
 };
 
 export const CATEGORIES: Category[] = [
-  { slug: "gaming", sv: "Gaming", en: "Gaming" },
-  { slug: "just-chatting", sv: "Just Chatting", en: "Just Chatting" },
-  { slug: "esport", sv: "Esport", en: "Esports" },
-  { slug: "irl", sv: "IRL / Livsstil", en: "IRL / Lifestyle" },
-  { slug: "musik", sv: "Musik", en: "Music" },
-  { slug: "kreativt", sv: "Kreativt", en: "Creative" },
-  { slug: "bordsspel", sv: "Bord- & kortspel", en: "Tabletop & Cards" },
-  { slug: "sport", sv: "Sport", en: "Sports" },
-  { slug: "ovrigt", sv: "Övrigt", en: "Other" },
+  { slug: "gaming", label: "Gaming" },
+  { slug: "just-chatting", label: "Just Chatting" },
+  { slug: "esports", label: "Esports" },
+  { slug: "irl", label: "IRL / Lifestyle" },
+  { slug: "music", label: "Music" },
+  { slug: "creative", label: "Creative" },
+  { slug: "tabletop", label: "Tabletop & Cards" },
+  { slug: "sports", label: "Sports" },
+  { slug: "other", label: "Other" },
 ];
 
-export function categoryLabel(slug: string, locale: string): string {
-  const cat = CATEGORIES.find((c) => c.slug === slug);
-  if (!cat) return slug;
-  return locale === "en" ? cat.en : cat.sv;
+export function categoryLabel(slug: string): string {
+  return CATEGORIES.find((c) => c.slug === slug)?.label ?? slug;
 }

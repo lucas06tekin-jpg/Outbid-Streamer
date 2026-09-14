@@ -54,9 +54,9 @@
   --color-silver: var(--silver);
   --color-bronze: var(--bronze);
   --color-live: var(--live);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-fraunces);
+  --font-display: var(--font-inter);
 }
 
 body {

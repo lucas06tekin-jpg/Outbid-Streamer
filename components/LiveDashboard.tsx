@@ -32,16 +32,16 @@ export default function LiveDashboard({
 
   useEffect(() => {
     try {
-      if (!localStorage.getItem("streamtopp_visited")) {
-        localStorage.setItem("streamtopp_visited", "1");
+      if (!localStorage.getItem("streamerbid_visited")) {
+        localStorage.setItem("streamerbid_visited", "1");
         fetch("/api/track-view", { method: "POST" }).catch(() => {});
       }
     } catch {}
 
     let sessionId: string;
     try {
-      sessionId = sessionStorage.getItem("streamtopp_session") ?? crypto.randomUUID();
-      sessionStorage.setItem("streamtopp_session", sessionId);
+      sessionId = sessionStorage.getItem("streamerbid_session") ?? crypto.randomUUID();
+      sessionStorage.setItem("streamerbid_session", sessionId);
     } catch {
       sessionId = crypto.randomUUID();
     }
@@ -162,7 +162,7 @@ function ToastStack({
       {items.map((item) => (
         <Link
           key={item.id}
-          href={`/kanal/${item.streamerSlug}`}
+          href={`/channel/${item.streamerSlug}`}
           onClick={() => onDismiss(item.id)}
           className="animate-toast-in pointer-events-auto flex w-72 items-start gap-3 rounded-xl border border-border bg-surface p-3 shadow-lg transition hover:border-accent"
         >
@@ -225,7 +225,7 @@ function ActivityFeed({ items }: { items: ActivityItem[] }) {
         {oldestFirst.map((item) => (
           <Link
             key={item.id}
-            href={`/kanal/${item.streamerSlug}`}
+            href={`/channel/${item.streamerSlug}`}
             className="animate-toast-in flex shrink-0 items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-2 text-xs hover:border-accent"
           >
             <span className="shrink-0 font-mono font-semibold text-accent">#{item.rank}</span>

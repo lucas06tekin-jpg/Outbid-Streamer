@@ -24,42 +24,42 @@ export default async function CookiesPage({
     <div className="mx-auto max-w-2xl px-4 sm:px-6 py-10">
       <h1 className="text-2xl font-bold">{t("cookiesTitle")}</h1>
 
-      <CookiesSv />
+      <CookiesContent />
     </div>
   );
 }
 
-function CookiesSv() {
+function CookiesContent() {
   return (
     <div className="mt-4 space-y-4 text-sm text-muted leading-relaxed">
       <p>
-        Vi använder endast cookies som är strikt nödvändiga för att sajten ska fungera, till
-        exempel för att komma ihåg ditt val i cookiebannern och för att hantera din
-        admin-inloggning. Dessa kräver inte samtycke enligt lag.
+        We only use cookies that are strictly necessary for the site to work, for example to
+        remember your choice in the cookie banner and to handle your admin login. These
+        don&apos;t require consent under law.
       </p>
       <p>
-        Vi använder inga cookies för analys, marknadsföring eller spårning i denna version av
-        tjänsten. Om det läggs till i framtiden kommer denna sida att uppdateras och du
-        kommer att tillfrågas om samtycke innan sådana cookies aktiveras.
+        We don&apos;t use any cookies for analytics, marketing, or tracking in this version of
+        the service. If that changes in the future, this page will be updated and you&apos;ll
+        be asked for consent before such cookies are activated.
       </p>
       <table className="w-full border-collapse text-left text-xs mt-4">
         <thead>
           <tr className="border-b border-border">
-            <th className="py-2 pr-4">Namn</th>
-            <th className="py-2 pr-4">Syfte</th>
-            <th className="py-2">Varaktighet</th>
+            <th className="py-2 pr-4">Name</th>
+            <th className="py-2 pr-4">Purpose</th>
+            <th className="py-2">Duration</th>
           </tr>
         </thead>
         <tbody>
           <tr className="border-b border-border">
             <td className="py-2 pr-4">cookie-consent-necessary-only</td>
-            <td className="py-2 pr-4">Kommer ihåg att du stängt cookiebannern</td>
-            <td className="py-2">Lokal lagring i din webbläsare</td>
+            <td className="py-2 pr-4">Remembers that you&apos;ve closed the cookie banner</td>
+            <td className="py-2">Local storage in your browser</td>
           </tr>
           <tr>
             <td className="py-2 pr-4">admin_session</td>
-            <td className="py-2 pr-4">Håller dig inloggad i adminpanelen</td>
-            <td className="py-2">12 timmar</td>
+            <td className="py-2 pr-4">Keeps you logged in to the admin panel</td>
+            <td className="py-2">12 hours</td>
           </tr>
         </tbody>
       </table>

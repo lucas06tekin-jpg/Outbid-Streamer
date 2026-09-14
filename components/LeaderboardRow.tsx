@@ -65,7 +65,7 @@ export default function LeaderboardRow({
 
       <div className="min-w-0 flex-1">
         <Link
-          href={`/kanal/${streamer.slug}`}
+          href={`/channel/${streamer.slug}`}
           className="font-semibold text-foreground hover:text-accent transition-colors"
         >
           {streamer.name}
@@ -76,7 +76,7 @@ export default function LeaderboardRow({
             {platformLabel(streamer.platform)}
           </span>
           <span className="inline-block rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">
-            {categoryLabel(streamer.category, locale)}
+            {categoryLabel(streamer.category)}
           </span>
         </div>
       </div>
@@ -99,7 +99,7 @@ export default function LeaderboardRow({
           {t("visit")}
         </a>
         <Link
-          href={`/buda?slug=${streamer.slug}`}
+          href={`/bid?slug=${streamer.slug}`}
           className="rounded-md bg-accent px-3 py-1.5 text-center text-xs font-semibold text-accent-foreground hover:brightness-110 transition"
         >
           {t("claim")}

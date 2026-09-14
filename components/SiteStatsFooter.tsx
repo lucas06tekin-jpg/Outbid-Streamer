@@ -7,13 +7,9 @@ export default async function SiteStatsFooter({ locale }: { locale: string }) {
   const summary = await getSiteSummary();
   const numberFmt = new Intl.NumberFormat(locale);
 
-  const days = summary.launchDate
-    ? Math.max(0, Math.floor((Date.now() - new Date(summary.launchDate).getTime()) / 86_400_000))
-    : 0;
-
   return (
     <div className="mt-14 border-t border-border pt-10 text-center">
-      <p className="text-sm text-muted">{t("eyebrow", { days })}</p>
+      <p className="text-sm text-muted">{t("eyebrow", { days: summary.daysSinceLaunch })}</p>
 
       <div className="mx-auto mt-5 grid max-w-xl grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-border bg-surface px-4 py-5">

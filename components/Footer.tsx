@@ -6,7 +6,7 @@ export default function Footer() {
   const f = useTranslations("footer");
   const m = useTranslations("meta");
 
-  const supportEmail = process.env.SUPPORT_EMAIL || "support@example.se";
+  const supportEmail = process.env.SUPPORT_EMAIL || "support@example.com";
 
   return (
     <footer className="border-t border-border bg-surface mt-20">
@@ -26,22 +26,22 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col gap-1 text-muted">
-          <Link href="/kategorier" className="hover:text-foreground">
+          <Link href="/categories" className="hover:text-foreground">
             {t("categories")}
           </Link>
-          <Link href="/om" className="hover:text-foreground">
+          <Link href="/about" className="hover:text-foreground">
             {t("about")}
           </Link>
-          <Link href="/villkor" className="hover:text-foreground">
+          <Link href="/terms" className="hover:text-foreground">
             {t("terms")}
           </Link>
-          <Link href="/integritetspolicy" className="hover:text-foreground">
+          <Link href="/privacy" className="hover:text-foreground">
             {t("privacy")}
           </Link>
           <Link href="/cookies" className="hover:text-foreground">
             {t("cookies")}
           </Link>
-          <Link href="/kontakt" className="hover:text-foreground">
+          <Link href="/contact" className="hover:text-foreground">
             {t("contact")}
           </Link>
         </div>

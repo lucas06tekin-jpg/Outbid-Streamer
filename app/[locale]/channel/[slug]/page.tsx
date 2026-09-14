@@ -62,7 +62,7 @@ export default async function StreamerPage({
               {platformLabel(streamer.platform)}
             </span>
             <span className="inline-block rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">
-              {categoryLabel(streamer.category, locale)}
+              {categoryLabel(streamer.category)}
             </span>
           </div>
         </div>
@@ -93,7 +93,7 @@ export default async function StreamerPage({
           {t("visit")}
         </a>
         <Link
-          href={`/buda?slug=${streamer.slug}`}
+          href={`/bid?slug=${streamer.slug}`}
           className="rounded-md bg-surface-2 px-5 py-2.5 font-semibold hover:bg-border transition-colors"
         >
           {t("claimThisRank")}

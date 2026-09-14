@@ -65,9 +65,10 @@ export async function POST(req: NextRequest) {
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    // Betalmetoder styrs via Stripe Dashboard -> Settings -> Payment methods,
-    // inte hårdkodat här. Om Swish/Klarna inte är aktiverat i dashboarden
-    // skulle en explicit payment_method_types-lista göra hela anropet ogiltigt.
+    // Payment methods are controlled via Stripe Dashboard -> Settings -> Payment
+    // methods, not hardcoded here. If Swish/Klarna aren't enabled in the
+    // dashboard, an explicit payment_method_types list would make the whole
+    // call fail.
     customer_email: input.email,
     line_items: [
       {
@@ -75,15 +76,15 @@ export async function POST(req: NextRequest) {
           currency: "sek",
           unit_amount: bidOre,
           product_data: {
-            name: `Topplista: ${input.name}`,
-            description: "Plats på topplistan (inkl. 25% moms)",
+            name: `Leaderboard: ${input.name}`,
+            description: "Spot on the leaderboard (incl. 25% VAT)",
           },
         },
         quantity: 1,
       },
     ],
-    success_url: `${baseUrl}/tack?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${baseUrl}/buda?canceled=1`,
+    success_url: `${baseUrl}/thanks?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${baseUrl}/bid?canceled=1`,
     metadata: {
       streamerId: streamer.id,
       name: input.name,

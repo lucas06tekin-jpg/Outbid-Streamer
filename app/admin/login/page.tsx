@@ -12,7 +12,7 @@ export default async function AdminLoginPage({
       <h1 className="text-xl font-bold">Admin</h1>
       <form action={loginAction} className="mt-6 flex flex-col gap-4">
         <label className="block">
-          <span className="mb-1 block text-sm font-medium">Lösenord</span>
+          <span className="mb-1 block text-sm font-medium">Password</span>
           <input
             type="password"
             name="password"
@@ -23,14 +23,14 @@ export default async function AdminLoginPage({
         </label>
         {error && (
           <p className="rounded-md bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700 dark:bg-red-950/40 dark:border-red-900 dark:text-red-400">
-            Fel lösenord.
+            Wrong password.
           </p>
         )}
         <button
           type="submit"
           className="rounded-md bg-accent px-4 py-2.5 font-semibold text-accent-foreground hover:brightness-110 transition"
         >
-          Logga in
+          Log in
         </button>
       </form>
     </div>

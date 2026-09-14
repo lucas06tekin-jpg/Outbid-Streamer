@@ -187,7 +187,7 @@ export default function BidForm({
         >
           {CATEGORIES.map((c) => (
             <option key={c.slug} value={c.slug}>
-              {categoryLabel(c.slug, locale)}
+              {categoryLabel(c.slug)}
             </option>
           ))}
         </select>
@@ -270,11 +270,11 @@ export default function BidForm({
         />
         <span>
           {t("terms")}{" "}
-          <Link href="/villkor" className="underline hover:text-accent" target="_blank">
+          <Link href="/terms" className="underline hover:text-accent" target="_blank">
             {t("termsLink")}
           </Link>{" "}
           {t("and")}{" "}
-          <Link href="/integritetspolicy" className="underline hover:text-accent" target="_blank">
+          <Link href="/privacy" className="underline hover:text-accent" target="_blank">
             {t("privacyLink")}
           </Link>
         </span>

@@ -1,0 +1,168 @@
+{
+  "meta": {
+    "siteName": "StreamerBid",
+    "tagline": "The leaderboard for livestreamers. Bid your way to the top."
+  },
+  "nav": {
+    "home": "Leaderboard",
+    "categories": "Categories",
+    "about": "About",
+    "bid": "Bid your way to the top",
+    "bidShort": "Bid",
+    "terms": "Terms",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookies",
+    "contact": "Contact",
+    "admin": "Admin"
+  },
+  "categoriesPage": {
+    "title": "Categories",
+    "subtitle": "Browse streamers by category.",
+    "count": "{count, plural, =0 {No streamers} =1 {1 streamer} other {# streamers}}"
+  },
+  "home": {
+    "title": "Pay to get seen",
+    "subtitle": "A leaderboard for livestreamers. Anyone can outbid whoever's in first place — the highest bid wins the spot and gets seen by the most viewers.",
+    "allCategories": "All categories",
+    "rank": "Rank",
+    "category": "Category",
+    "bidLabel": "Bid",
+    "clicks": "Clicks",
+    "visit": "Watch",
+    "claim": "Outbid",
+    "empty": "No streamers in this category yet. Be the first!",
+    "searchPlaceholder": "Search streamers...",
+    "searchClear": "Clear search",
+    "searchEmpty": "No streamers match \"{query}\".",
+    "ctaTitle": "Want to be at the top?",
+    "ctaBody": "Place a bid and take the current #1 spot right after payment.",
+    "ctaButton": "Bid now"
+  },
+  "bidForm": {
+    "title": "Bid your way to the top",
+    "intro": "Fill in the form below. Your bid activates immediately after payment is approved, and your channel jumps straight to its spot on the leaderboard.",
+    "name": "Channel / streamer name",
+    "platform": "Platform",
+    "url": "Link to your channel",
+    "description": "Short description",
+    "descriptionHint": "Max 150 characters",
+    "category": "Category",
+    "imageUrl": "Profile picture/logo",
+    "imageUrlOptional": "(optional)",
+    "logoUpload": "Upload image",
+    "logoReplace": "Replace image",
+    "logoUploading": "Uploading...",
+    "logoHint": "PNG, JPG, WEBP or SVG, max 2 MB.",
+    "email": "Email",
+    "emailHint": "Used for your receipt and contact about your listing",
+    "vatNumber": "VAT number / business ID",
+    "vatNumberOptional": "(optional, for registered streamers)",
+    "bidAmount": "Your bid (kr, incl. VAT)",
+    "minBidHint": "Minimum bid for this spot: {amount}",
+    "withdrawal": "I understand the service activates immediately, and that I therefore waive my right of withdrawal under the Swedish Distance Selling Act.",
+    "terms": "I agree to the",
+    "termsLink": "terms",
+    "and": "and",
+    "privacyLink": "privacy policy",
+    "submit": "Go to payment",
+    "submitting": "Creating payment...",
+    "vatNote": "The price above includes 25% VAT.",
+    "errors": {
+      "required": "This field is required",
+      "url": "Enter a valid URL (https://...)",
+      "email": "Enter a valid email address",
+      "description": "The description can be at most 150 characters",
+      "bidTooLow": "Your bid is too low. The minimum bid right now is {amount}.",
+      "withdrawal": "You must confirm that you waive your right of withdrawal to continue.",
+      "terms": "You must agree to the terms and privacy policy.",
+      "logoTooLarge": "The image is too large. Max 2 MB.",
+      "logoInvalidType": "That file type isn't supported. Use PNG, JPG, WEBP or SVG.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "siteSummary": {
+    "eyebrow": "Some stats about this side project since launching {days, plural, =0 {today} =1 {1 day ago} other {# days ago}}",
+    "visitors": "visitors",
+    "revenue": "revenue",
+    "streamersAdded": "streamers added"
+  },
+  "featured": {
+    "liveNow": "{name} is live now",
+    "noPreview": "Preview isn't supported for this platform yet.",
+    "watchLive": "Watch live",
+    "viewProfile": "View profile"
+  },
+  "streamer": {
+    "backToList": "Back to leaderboard",
+    "currentBid": "Current bid",
+    "category": "Category",
+    "clicks": "Clicks",
+    "visit": "Watch channel",
+    "claimThisRank": "Outbid this spot",
+    "notFound": "Streamer not found."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The link may be broken, or the page may have been removed.",
+    "cta": "Back to leaderboard"
+  },
+  "errorPage": {
+    "title": "Something went wrong",
+    "body": "An unexpected error occurred. Please try again shortly.",
+    "retry": "Try again",
+    "home": "Back to leaderboard"
+  },
+  "thanks": {
+    "title": "Thanks for your bid!",
+    "paid": "Your payment went through and your spot on the leaderboard is active.",
+    "pending": "We're waiting for confirmation from Stripe. This page will update automatically shortly.",
+    "failed": "We couldn't confirm the payment. Contact us if you were charged.",
+    "backToList": "Back to leaderboard",
+    "receiptNote": "A receipt with VAT details will be sent to your email."
+  },
+  "footer": {
+    "support": "Contact",
+    "rights": "All rights reserved."
+  },
+  "cookieBanner": {
+    "text": "We only use cookies that are strictly necessary for the site to work. We don't use any analytics or marketing cookies without your consent.",
+    "accept": "OK, got it",
+    "readMore": "Learn more"
+  },
+  "legal": {
+    "termsTitle": "Terms",
+    "privacyTitle": "Privacy Policy",
+    "cookiesTitle": "Cookies"
+  },
+  "contact": {
+    "title": "Contact",
+    "intro": "Questions about your listing or payment, or want to request deletion of your data? Get in touch."
+  },
+  "live": {
+    "online": "{count} online",
+    "totalViews": "{count} views since launch",
+    "claimHeadline1": "Take #1 for <amount></amount>",
+    "claimHeadlineN": "Take spot #{rank} for <amount></amount>",
+    "claimSubtext": "New spots start at {floor}. Use +/- to see the price for other positions.",
+    "prevRank": "Show lower spot",
+    "nextRank": "Show higher spot",
+    "activityTitle": "Latest activity",
+    "activityEmpty": "No bids yet — be the first to show up here.",
+    "toastMessage": "{name} just took spot #{rank} for {amount}",
+    "toastDismiss": "Dismiss"
+  },
+  "admin": {
+    "title": "Admin",
+    "login": "Log in",
+    "password": "Password",
+    "wrongPassword": "Wrong password.",
+    "logout": "Log out",
+    "pending": "Pending review",
+    "paid": "Active",
+    "rejected": "Rejected",
+    "reject": "Reject",
+    "approve": "Approve",
+    "delete": "Delete permanently (GDPR)",
+    "noItems": "No listings here."
+  }
+}

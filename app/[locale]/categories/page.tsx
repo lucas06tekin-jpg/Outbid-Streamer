@@ -46,7 +46,7 @@ export default async function CategoriesPage({
               href={{ pathname: "/", query: { category: c.slug } }}
               className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-4 transition hover:border-accent"
             >
-              <span className="font-medium text-foreground">{categoryLabel(c.slug, locale)}</span>
+              <span className="font-medium text-foreground">{categoryLabel(c.slug)}</span>
               <span className="rounded-full bg-surface-2 px-2.5 py-1 text-xs text-muted">
                 {t("count", { count })}
               </span>

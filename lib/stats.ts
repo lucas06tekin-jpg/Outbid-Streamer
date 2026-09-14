@@ -39,7 +39,7 @@ export type SiteSummary = {
   visitors: number;
   revenueOre: number;
   streamersAdded: number;
-  launchDate: string | null;
+  daysSinceLaunch: number;
 };
 
 export async function getSiteSummary(): Promise<SiteSummary> {
@@ -50,11 +50,15 @@ export async function getSiteSummary(): Promise<SiteSummary> {
     prisma.streamer.findFirst({ orderBy: { createdAt: "asc" }, select: { createdAt: true } }),
   ]);
 
+  const daysSinceLaunch = firstStreamer
+    ? Math.max(0, Math.floor((Date.now() - firstStreamer.createdAt.getTime()) / 86_400_000))
+    : 0;
+
   return {
     visitors,
     revenueOre: revenue._sum.amount ?? 0,
     streamersAdded,
-    launchDate: firstStreamer?.createdAt.toISOString() ?? null,
+    daysSinceLaunch,
   };
 }
 

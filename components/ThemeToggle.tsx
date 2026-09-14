@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-const STORAGE_KEY = "streamtopp_theme";
+const STORAGE_KEY = "streamerbid_theme";
 
 export default function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of the DOM attribute on mount, no SSR equivalent
     setIsDark(document.documentElement.getAttribute("data-theme") === "dark");
   }, []);
 
@@ -24,7 +25,7 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      aria-label={isDark ? "Byt till ljust läge" : "Byt till mörkt läge"}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-2 text-muted transition hover:text-accent"
     >
       {isDark ? (

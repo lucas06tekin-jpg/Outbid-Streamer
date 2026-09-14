@@ -48,7 +48,7 @@ export default async function RunnerUpStream({
       )}
 
       <div className="px-3 py-1.5 text-right">
-        <Link href={`/kanal/${streamer.slug}`} className="text-xs text-muted hover:text-accent transition-colors">
+        <Link href={`/channel/${streamer.slug}`} className="text-xs text-muted hover:text-accent transition-colors">
           {t("viewProfile")}
         </Link>
       </div>

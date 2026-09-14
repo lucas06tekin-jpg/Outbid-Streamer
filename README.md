@@ -1,170 +1,170 @@
-# StreamTopp — betald leaderboard för livestreamers (outbid.lol-klon)
+# StreamerBid — a paid leaderboard for livestreamers (outbid.lol clone)
 
-En svensk/europeisk "pay-to-rank"-leaderboard för livestreamers. Streamers betalar för att
-synas högst upp; vem som helst kan buda över nuvarande etta. Byggd med Next.js (App Router),
-Prisma, PostgreSQL på Supabase och Stripe (kort, Swish, Klarna).
+A "pay-to-rank" leaderboard for livestreamers. Streamers pay to be seen at the top; anyone
+can outbid whoever's currently #1. Built with Next.js (App Router), Prisma, PostgreSQL on
+Supabase, and Stripe (card, Swish, Klarna).
 
-## Teknikstack
+## Tech stack
 
 - Next.js 16 (App Router) + TypeScript + Tailwind CSS v4
-- next-intl för svenska/engelska (svenska är standard, `/en/...` för engelska)
-- Prisma 7 (driver adapters) mot PostgreSQL på Supabase
-- Stripe Checkout (hosted) med kort, Swish och Klarna, i SEK
-- Resend för kvitto-e-post (valfritt)
+- next-intl for i18n (currently English-only; add another locale in `i18n/routing.ts`)
+- Prisma 7 (driver adapters) against PostgreSQL on Supabase
+- Stripe Checkout (hosted) with card, Swish, and Klarna, in SEK
+- Resend for receipt emails (optional)
 
-## Kom igång lokalt
+## Getting started locally
 
 ```bash
 npm install
 ```
 
-### 1. Databasen (Supabase)
+### 1. The database (Supabase)
 
-Detta projekt behöver ett eget Supabase-projekt (skilt från ev. andra Outbid-kloner).
+This project needs its own Supabase project (separate from any other Outbid clones).
 
-1. Skapa ett nytt projekt på [supabase.com](https://supabase.com/dashboard) — välj gärna
-   region **eu-central-1 (Frankfurt)** för EU-datalagring.
-2. Gå till **Project Settings → Database → Connection string** och hämta:
-   - **Connection pooling** (port `6543`, Supavisor "Transaction" mode) → detta blir
-     `DATABASE_URL` (det appen använder i körtid).
-   - **Session pooler** (port `5432` via `pooler.supabase.com`) → detta blir `DIRECT_URL`
-     (det Prisma CLI använder för migrations). Den "riktiga" direktanslutningen
-     (`db.<ref>.supabase.co:5432`) kräver IPv6 och är ofta oåtkomlig lokalt/i CI, så
-     session-poolern används istället som standard i detta projekt.
-3. Skapa en **Storage bucket** som heter `streamer-images` (public) för uppladdade
-   profilbilder/loggor, och hämta din **anon key** under **Project Settings → API**.
+1. Create a new project at [supabase.com](https://supabase.com/dashboard) — pick region
+   **eu-central-1 (Frankfurt)** for EU data residency.
+2. Go to **Project Settings → Database → Connection string** and grab:
+   - **Connection pooling** (port `6543`, Supavisor "Transaction" mode) → this becomes
+     `DATABASE_URL` (what the app uses at runtime).
+   - **Session pooler** (port `5432` via `pooler.supabase.com`) → this becomes `DIRECT_URL`
+     (what the Prisma CLI uses for migrations). The "real" direct connection
+     (`db.<ref>.supabase.co:5432`) requires IPv6 and is often unreachable locally/in CI, so
+     the session pooler is used as the default in this project instead.
+3. Create a **Storage bucket** named `streamer-images` (public) for uploaded profile
+   pictures/logos, and grab your **anon key** under **Project Settings → API**.
 
-Kopiera `.env.example` till `.env` och fyll i projekt-ref/lösenord/nycklar:
+Copy `.env.example` to `.env` and fill in the project ref/password/keys:
 
 ```bash
 cp .env.example .env
 ```
 
-Kör sedan migrationerna mot din nya databas:
+Then run the migrations against your new database:
 
 ```bash
 npm run db:migrate
 npm run db:generate
 ```
 
-Vill du seeda lite demodata lokalt (fyra exempel-streamers):
+Want to seed some local demo data (four example streamers)?
 
 ```bash
 npm run db:seed
 ```
 
-Framtida schemaändringar görs som vanligt med:
+Future schema changes are made as usual with:
 
 ```bash
-npm run db:migrate -- --name din_migration
+npm run db:migrate -- --name your_migration
 ```
 
 ### 2. Stripe
 
-1. Skapa ett konto på [stripe.com](https://stripe.com) om du inte redan har ett.
-2. Hämta test-nycklar under **Developers → API keys** och fyll i `.env`:
+1. Create an account at [stripe.com](https://stripe.com) if you don't already have one.
+2. Grab test keys under **Developers → API keys** and fill in `.env`:
    - `STRIPE_SECRET_KEY` (sk_test_...)
    - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (pk_test_...)
-3. Aktivera **Swish** och **Klarna** som betalmetoder: **Settings → Payment methods** i
-   Stripe Dashboard, sök upp Swish och Klarna och slå på dem (Swish kräver ett svenskt
-   bankgironummer/Stripe-avtal för produktion — i test-läge fungerar det direkt).
-4. Godkänn Stripes **Data Processing Agreement (DPA)** under **Settings → Compliance** —
-   detta nämns i integritetspolicyn.
-5. Webhook (lokalt): installera [Stripe CLI](https://stripe.com/docs/stripe-cli) och kör:
+3. Enable **Swish** and **Klarna** as payment methods: **Settings → Payment methods** in the
+   Stripe Dashboard, find Swish and Klarna and turn them on (Swish requires a Swedish
+   bankgiro number/Stripe agreement for production — in test mode it works right away).
+4. Accept Stripe's **Data Processing Agreement (DPA)** under **Settings → Compliance** —
+   this is referenced in the privacy policy.
+5. Webhook (locally): install the [Stripe CLI](https://stripe.com/docs/stripe-cli) and run:
 
    ```bash
    stripe listen --forward-to localhost:3000/api/webhook
    ```
 
-   Klistra in den `whsec_...`-nyckel som skrivs ut i `STRIPE_WEBHOOK_SECRET` i `.env`.
+   Paste the `whsec_...` key it prints into `STRIPE_WEBHOOK_SECRET` in `.env`.
 
-6. I produktion: skapa en webhook-endpoint i Stripe Dashboard som pekar mot
-   `https://din-domän.se/api/webhook`, lyssnar på `checkout.session.completed`,
-   `checkout.session.expired` och `payment_intent.payment_failed`, och lägg
-   dess signeringsnyckel som `STRIPE_WEBHOOK_SECRET` i Vercel.
+6. In production: create a webhook endpoint in the Stripe Dashboard pointing at
+   `https://your-domain.com/api/webhook`, listening for `checkout.session.completed`,
+   `checkout.session.expired`, and `payment_intent.payment_failed`, and set its signing
+   secret as `STRIPE_WEBHOOK_SECRET` in Vercel.
 
-### 3. Kvitto-e-post (valfritt men rekommenderat)
+### 3. Receipt emails (optional but recommended)
 
-Skapa ett konto på [resend.com](https://resend.com), verifiera din avsändardomän, och fyll i:
+Create an account at [resend.com](https://resend.com), verify your sending domain, and fill in:
 
 - `RESEND_API_KEY`
-- `RECEIPT_FROM_EMAIL` (t.ex. `kvitto@dindomän.se`)
+- `RECEIPT_FROM_EMAIL` (e.g. `receipts@yourdomain.com`)
 
-Om dessa lämnas tomma skickas inget kvitto, men betalningen/listningen fungerar ändå —
-det loggas bara en varning i serverloggen.
+If these are left blank, no receipt is sent, but the payment/listing still works — it just
+logs a warning in the server log.
 
-### 4. Kontakt
+### 4. Contact
 
-Fyll i i `.env`:
+Fill in `.env`:
 
 ```
 SUPPORT_EMAIL=
 ```
 
-Visas i footer, på kontaktsidan och i villkor/integritetspolicy.
+Shown in the footer, on the contact page, and in the terms/privacy policy.
 
-**Obs:** Om du börjar ta betalt på riktigt (Stripe live-läge, inte test-läge) som en
-regelbunden inkomstkälla räknar Skatteverket det oftast som näringsverksamhet, vilket i
-Sverige normalt kräver att du registrerar dig som minst enskild firma (gratis och snabbt
-via Bolagsverket). Inte bråttom så länge Stripe står i test-läge, men värt att känna till
-innan ni tar riktiga pengar.
+**Note:** If you start taking real payments (Stripe live mode, not test mode) as a recurring
+income source, Skatteverket (the Swedish Tax Agency) usually treats that as business
+activity, which in Sweden normally requires registering at least a sole proprietorship
+(free and quick via Bolagsverket). No rush while Stripe is in test mode, but worth knowing
+before you take real money.
 
 ### 5. Admin
 
-Sätt ett starkt lösenord i `ADMIN_PASSWORD`. Adminpanelen nås på `/admin` och låter dig
-avvisa (dölja) olämpliga listningar, återaktivera dem, samt radera dem permanent
-("rätt att bli glömd" enligt GDPR).
+Set a strong password in `ADMIN_PASSWORD`. The admin panel is available at `/admin` and lets
+you reject (hide) inappropriate listings, reactivate them, and permanently delete them
+("right to be forgotten" under GDPR).
 
-### 6. Starta appen
+### 6. Start the app
 
 ```bash
 npm run dev
 ```
 
-Öppna [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000).
 
-## Deploy till Vercel
+## Deploying to Vercel
 
-1. Skapa ett nytt Vercel-projekt från detta repo.
-2. Sätt regionen till **arn1 (Stockholm)** under **Settings → Functions → Region**.
-3. Lägg till samtliga variabler från `.env` i **Settings → Environment Variables**
-   (använd riktiga Stripe **live**-nycklar och en stark `ADMIN_PASSWORD` i produktion).
-4. Sätt `NEXT_PUBLIC_BASE_URL` till din riktiga domän.
-5. Deploya. Glöm inte att lägga till produktionens webhook-endpoint i Stripe (steg 2.6 ovan).
+1. Create a new Vercel project from this repo.
+2. Set the region to **arn1 (Stockholm)** under **Settings → Functions → Region**.
+3. Add all the variables from `.env` in **Settings → Environment Variables** (use real
+   Stripe **live** keys and a strong `ADMIN_PASSWORD` in production).
+4. Set `NEXT_PUBLIC_BASE_URL` to your real domain.
+5. Deploy. Don't forget to add the production webhook endpoint in Stripe (step 2.6 above).
 
-## Juridiskt att tänka på innan lansering
+## Legal considerations before launch
 
-Denna kodbas innehåller ett startförslag på villkor, integritetspolicy och
-ångerrätts-hantering enligt svensk distansavtalslag och GDPR, men **är inte juridisk
-rådgivning**. Låt en jurist granska villkoren, momshanteringen (särskilt om ni säljer
-till kunder i flera EU-länder och behöver registrera er för OSS/One Stop Shop) och
-GDPR-rutinerna innan ni tar betalt av riktiga kunder.
+This codebase includes a starting draft of terms, a privacy policy, and withdrawal-right
+handling under Swedish distance-selling law and GDPR, but **this is not legal advice**. Have
+a lawyer review the terms, VAT handling (especially if you sell to customers in multiple EU
+countries and need to register for OSS/One Stop Shop), and GDPR procedures before charging
+real customers.
 
-## Projektstruktur
+## Project structure
 
 ```
 app/
-  [locale]/            # Lokaliserade sidor (sv/en): topplista, kanalsida, buda-flöde,
-                        # tack-sida, villkor, integritetspolicy, cookies, kontakt
-  admin/                # Lösenordsskyddad adminpanel (ej lokaliserad)
-  go/[id]/              # Klickspårning + redirect till extern kanallänk
-  api/checkout/         # Skapar Stripe Checkout Session
-  api/webhook/          # Stripe-webhook (signaturverifiering, uppdaterar DB, skickar kvitto)
+  [locale]/            # Localized pages: leaderboard, channel page, bid flow,
+                        # thanks page, terms, privacy policy, cookies, contact
+  admin/                # Password-protected admin panel (not localized)
+  go/[id]/              # Click tracking + redirect to the external channel link
+  api/checkout/         # Creates a Stripe Checkout Session
+  api/webhook/          # Stripe webhook (signature verification, updates DB, sends receipt)
 prisma/
   schema.prisma
   seed.ts
 lib/
-  prisma.ts             # Prisma Client med pg driver-adapter (Prisma 7)
+  prisma.ts             # Prisma Client with the pg driver adapter (Prisma 7)
   stripe.ts
-  format.ts             # SEK-formatering, moms-uppdelning, min-budsberäkning
-  categories.ts          # Innehållskategorier (Gaming, Just Chatting, IRL, ...)
-  platforms.ts           # Streamingplattformar (Twitch, YouTube, Kick, TikTok, ...)
+  format.ts             # SEK formatting, VAT split, minimum-bid calculation
+  categories.ts          # Content categories (Gaming, Just Chatting, IRL, ...)
+  platforms.ts           # Streaming platforms (Twitch, YouTube, Kick, TikTok, ...)
   admin-auth.ts
 i18n/                    # next-intl routing/config
-messages/                # sv.json / en.json
+messages/                # en.json
 ```
 
-## Min budökning
+## Minimum bid increment
 
-Nästa bud måste vara minst `MIN_BID_INCREMENT_ORE` öre högre än nuvarande bud, aldrig under
-Stripes minimigräns för en SEK-betalning, konfigurerbart i `.env`. Standard: 1 kr.
+The next bid must be at least `MIN_BID_INCREMENT_ORE` öre higher than the current bid, never
+below Stripe's minimum charge for a SEK payment, configurable in `.env`. Default: 1 kr.

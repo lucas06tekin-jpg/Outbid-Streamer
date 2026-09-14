@@ -26,13 +26,13 @@ export default async function AdminPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Admin</h1>
         <form action={logoutAction}>
-          <button className="text-sm text-muted hover:text-foreground">Logga ut</button>
+          <button className="text-sm text-muted hover:text-foreground">Log out</button>
         </form>
       </div>
 
-      <Group title={`Aktiva (${paid.length})`} streamers={paid} showReject showDelete />
-      <Group title={`Väntar på granskning (${pending.length})`} streamers={pending} showApprove showDelete />
-      <Group title={`Avvisade (${rejected.length})`} streamers={rejected} showApprove showDelete />
+      <Group title={`Active (${paid.length})`} streamers={paid} showReject showDelete />
+      <Group title={`Pending review (${pending.length})`} streamers={pending} showApprove showDelete />
+      <Group title={`Rejected (${rejected.length})`} streamers={rejected} showApprove showDelete />
     </div>
   );
 }
@@ -54,7 +54,7 @@ function Group({
     <section className="mt-8">
       <h2 className="text-sm font-semibold text-muted uppercase tracking-wide">{title}</h2>
       {streamers.length === 0 ? (
-        <p className="mt-3 text-sm text-muted">Inga listningar här.</p>
+        <p className="mt-3 text-sm text-muted">No listings here.</p>
       ) : (
         <div className="mt-3 flex flex-col gap-2">
           {streamers.map((s) => (
@@ -72,21 +72,21 @@ function Group({
                 {showApprove && (
                   <form action={approveAction.bind(null, s.id)}>
                     <button className="rounded-md bg-surface-2 px-3 py-1.5 text-xs hover:bg-border">
-                      Godkänn
+                      Approve
                     </button>
                   </form>
                 )}
                 {showReject && (
                   <form action={rejectAction.bind(null, s.id)}>
                     <button className="rounded-md bg-surface-2 px-3 py-1.5 text-xs hover:bg-border">
-                      Avvisa
+                      Reject
                     </button>
                   </form>
                 )}
                 {showDelete && (
                   <form action={deleteAction.bind(null, s.id)}>
                     <button className="rounded-md bg-red-50 border border-red-200 px-3 py-1.5 text-xs text-red-700 hover:bg-red-100 dark:bg-red-950/40 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/70">
-                      Radera (GDPR)
+                      Delete permanently (GDPR)
                     </button>
                   </form>
                 )}

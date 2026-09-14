@@ -49,7 +49,7 @@ export default async function FeaturedStream({
       )}
 
       <div className="px-4 py-2.5 text-right">
-        <Link href={`/kanal/${streamer.slug}`} className="text-xs text-muted hover:text-accent transition-colors">
+        <Link href={`/channel/${streamer.slug}`} className="text-xs text-muted hover:text-accent transition-colors">
           {t("viewProfile")}
         </Link>
       </div>

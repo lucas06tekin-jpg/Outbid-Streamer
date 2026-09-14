@@ -7,13 +7,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPaths = [
     "",
-    "/buda",
-    "/kategorier",
-    "/om",
-    "/villkor",
-    "/integritetspolicy",
+    "/bid",
+    "/categories",
+    "/about",
+    "/terms",
+    "/privacy",
     "/cookies",
-    "/kontakt",
+    "/contact",
   ];
 
   const staticEntries: MetadataRoute.Sitemap = staticPaths.flatMap((path) =>
@@ -31,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const streamerEntries: MetadataRoute.Sitemap = streamers.flatMap((s) =>
     routing.locales.map((locale) => ({
-      url: `${baseUrl}${locale === routing.defaultLocale ? "" : `/${locale}`}/kanal/${s.slug}`,
+      url: `${baseUrl}${locale === routing.defaultLocale ? "" : `/${locale}`}/channel/${s.slug}`,
       lastModified: s.updatedAt,
       changeFrequency: "daily",
       priority: 0.7,

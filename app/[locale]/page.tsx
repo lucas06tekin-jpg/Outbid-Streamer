@@ -112,7 +112,7 @@ export default async function HomePage({
             <p className="mt-1 max-w-xl text-sm text-muted">{t("subtitle")}</p>
           </div>
           <Link
-            href="/buda"
+            href="/bid"
             className="shrink-0 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground hover:brightness-110 transition"
           >
             {t("ctaButton")}
@@ -142,7 +142,7 @@ export default async function HomePage({
                   : "bg-surface-2 text-muted hover:text-foreground"
               }`}
             >
-              {categoryLabel(c.slug, locale)}
+              {categoryLabel(c.slug)}
             </Link>
           ))}
         </div>

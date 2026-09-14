@@ -23,10 +23,10 @@ export default function Header() {
           <Link href="/" className="hover:text-foreground transition-colors">
             {t("home")}
           </Link>
-          <Link href="/kategorier" className="hover:text-foreground transition-colors">
+          <Link href="/categories" className="hover:text-foreground transition-colors">
             {t("categories")}
           </Link>
-          <Link href="/om" className="hover:text-foreground transition-colors">
+          <Link href="/about" className="hover:text-foreground transition-colors">
             {t("about")}
           </Link>
         </nav>
@@ -71,7 +71,7 @@ export default function Header() {
             {t("admin")}
           </Link>
           <Link
-            href="/buda"
+            href="/bid"
             className="whitespace-nowrap rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-accent-foreground transition hover:brightness-110"
           >
             <span className="sm:hidden">{t("bidShort")}</span>
