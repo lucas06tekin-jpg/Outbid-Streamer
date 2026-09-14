@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import Logo from "./Logo";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
   const t = useTranslations("nav");
@@ -62,6 +63,7 @@ export default function Header() {
         </form>
 
         <div className="ml-auto flex shrink-0 items-center gap-2">
+          <ThemeToggle />
           <Link
             href="/admin"
             className="hidden rounded-full bg-surface-2 px-4 py-1.5 text-sm font-medium text-foreground transition hover:bg-border sm:inline-block"

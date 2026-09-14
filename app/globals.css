@@ -1,6 +1,28 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 :root {
+  color-scheme: light;
+  --background: #f7f8fa;
+  --surface: #ffffff;
+  --surface-2: #eef1f5;
+  --foreground: #111318;
+  --muted: #6b7280;
+  --border: #e2e5eb;
+  --accent: #3b82f6;
+  --accent-soft: #dbeafe;
+  --accent-foreground: #ffffff;
+  --gold: #b3852a;
+  --silver: #6b7484;
+  --bronze: #a15a30;
+  --live: #16a34a;
+  --ambient-glow: rgba(59, 130, 246, 0.05);
+  --stage-glow: rgba(59, 130, 246, 0.18);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
   --background: #0a0a0a;
   --surface: #161616;
   --surface-2: #232323;
@@ -14,6 +36,8 @@
   --silver: #9aa1ae;
   --bronze: #c17a44;
   --live: #22c55e;
+  --ambient-glow: rgba(59, 130, 246, 0.08);
+  --stage-glow: rgba(59, 130, 246, 0.32);
 }
 
 @theme inline {
@@ -37,13 +61,13 @@
 
 body {
   background:
-    radial-gradient(1100px 520px at 50% -8%, rgba(59, 130, 246, 0.08), transparent 65%),
+    radial-gradient(1100px 520px at 50% -8%, var(--ambient-glow), transparent 65%),
     var(--background);
   color: var(--foreground);
 }
 
 .stage-glow {
-  background: radial-gradient(55% 55% at 50% 18%, rgba(59, 130, 246, 0.32), transparent 72%);
+  background: radial-gradient(55% 55% at 50% 18%, var(--stage-glow), transparent 72%);
 }
 
 @layer components {

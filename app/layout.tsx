@@ -28,8 +28,19 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
+      data-theme="light"
       className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          // Runs before paint so a returning visitor's saved theme applies
+          // immediately instead of flashing the light default first.
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('streamtopp_theme');if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');}}catch(e){}})();",
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">{children}</body>
     </html>
   );
