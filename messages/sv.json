@@ -82,6 +82,7 @@
   },
   "featured": {
     "liveNow": "{name} streamar live nu",
+    "chat": "Live chatt för {name}",
     "noPreview": "Förhandsvisning stöds inte för den här plattformen än.",
     "watchLive": "Se live",
     "viewProfile": "Visa profil"

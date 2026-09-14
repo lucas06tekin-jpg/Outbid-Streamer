@@ -44,3 +44,17 @@ export function getEmbedInfo(platform: string, url: string, parentHost: string):
 
   return { kind: "none" };
 }
+
+/** Live chat embed, when the platform publicly supports one. Twitch's chat embed
+ *  needs only the channel slug and the same "parent" domain as the video embed.
+ *  Kick/YouTube/TikTok have no equivalent public chat-only iframe, so this
+ *  returns null for them rather than guessing at an undocumented URL. */
+export function getChatEmbedInfo(platform: string, url: string, parentHost: string): string | null {
+  if (platform === "twitch") {
+    const channel = lastPathSegment(url);
+    if (!channel) return null;
+    return `https://www.twitch.tv/embed/${encodeURIComponent(channel)}/chat?parent=${encodeURIComponent(parentHost)}`;
+  }
+
+  return null;
+}

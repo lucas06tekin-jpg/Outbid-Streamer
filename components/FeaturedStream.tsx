@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { getEmbedInfo } from "@/lib/embed";
+import { getEmbedInfo, getChatEmbedInfo } from "@/lib/embed";
 import { platformLabel } from "@/lib/platforms";
 
 export default async function FeaturedStream({
@@ -12,6 +12,7 @@ export default async function FeaturedStream({
 }) {
   const t = await getTranslations("featured");
   const embed = getEmbedInfo(streamer.platform, streamer.url, parentHost);
+  const chatSrc = getChatEmbedInfo(streamer.platform, streamer.url, parentHost);
 
   return (
     <div className="overflow-hidden rounded-xl border border-accent/40 bg-surface">
@@ -26,27 +27,37 @@ export default async function FeaturedStream({
         <span className="ml-auto shrink-0 text-xs text-muted">{platformLabel(streamer.platform)}</span>
       </div>
 
-      {embed.kind === "none" ? (
-        <div className="flex aspect-video flex-col items-center justify-center gap-3 bg-surface-2 px-6 text-center">
-          <p className="text-sm text-muted">{t("noPreview")}</p>
-          <a
-            href={`/go/${streamer.id}`}
-            target="_blank"
-            rel="noopener noreferrer nofollow sponsored"
-            className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:brightness-110 transition"
-          >
-            {t("watchLive")}
-          </a>
+      <div className="flex flex-col lg:flex-row lg:items-stretch">
+        <div className="lg:flex-1">
+          {embed.kind === "none" ? (
+            <div className="flex aspect-video flex-col items-center justify-center gap-3 bg-surface-2 px-6 text-center">
+              <p className="text-sm text-muted">{t("noPreview")}</p>
+              <a
+                href={`/go/${streamer.id}`}
+                target="_blank"
+                rel="noopener noreferrer nofollow sponsored"
+                className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:brightness-110 transition"
+              >
+                {t("watchLive")}
+              </a>
+            </div>
+          ) : (
+            <iframe
+              src={embed.src}
+              className="aspect-video w-full"
+              allow="autoplay; fullscreen; encrypted-media"
+              allowFullScreen
+              title={t("liveNow", { name: streamer.name })}
+            />
+          )}
         </div>
-      ) : (
-        <iframe
-          src={embed.src}
-          className="aspect-video w-full"
-          allow="autoplay; fullscreen; encrypted-media"
-          allowFullScreen
-          title={t("liveNow", { name: streamer.name })}
-        />
-      )}
+
+        {chatSrc && (
+          <div className="h-[360px] shrink-0 border-t border-border lg:h-auto lg:w-[300px] lg:border-t-0 lg:border-l">
+            <iframe src={chatSrc} className="h-full w-full" title={t("chat", { name: streamer.name })} />
+          </div>
+        )}
+      </div>
 
       <div className="px-4 py-2.5 text-right">
         <Link href={`/kanal/${streamer.slug}`} className="text-xs text-muted hover:text-accent transition-colors">
