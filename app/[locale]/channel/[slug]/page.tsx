@@ -5,7 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { formatOre } from "@/lib/format";
 import { categoryLabel } from "@/lib/categories";
-import { platformLabel } from "@/lib/platforms";
+import PlatformBadge from "@/components/PlatformBadge";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -58,9 +58,7 @@ export default async function StreamerPage({
         <div>
           <h1 className="font-display text-2xl font-semibold">{streamer.name}</h1>
           <div className="mt-1 flex flex-wrap gap-1.5">
-            <span className="inline-block rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">
-              {platformLabel(streamer.platform)}
-            </span>
+            <PlatformBadge platform={streamer.platform} />
             <span className="inline-block rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">
               {categoryLabel(streamer.category)}
             </span>

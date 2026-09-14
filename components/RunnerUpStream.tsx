@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getEmbedInfo } from "@/lib/embed";
-import { platformLabel } from "@/lib/platforms";
+import PlatformBadge from "./PlatformBadge";
 
 export default async function RunnerUpStream({
   streamer,
@@ -22,7 +22,7 @@ export default async function RunnerUpStream({
           {rank}
         </span>
         <span className="truncate text-sm font-medium text-foreground">{streamer.name}</span>
-        <span className="ml-auto shrink-0 text-xs text-muted">{platformLabel(streamer.platform)}</span>
+        <PlatformBadge platform={streamer.platform} className="ml-auto" />
       </div>
 
       {embed.kind === "none" ? (

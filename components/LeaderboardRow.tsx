@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { formatOre } from "@/lib/format";
 import { categoryLabel } from "@/lib/categories";
-import { platformLabel } from "@/lib/platforms";
+import PlatformBadge from "./PlatformBadge";
 
 const RANK_STYLES: Record<number, string> = {
   1: "bg-gold text-accent-foreground",
@@ -72,9 +72,7 @@ export default function LeaderboardRow({
         </Link>
         <p className="truncate text-sm text-muted">{streamer.description}</p>
         <div className="mt-1 flex flex-wrap gap-1.5">
-          <span className="inline-block rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">
-            {platformLabel(streamer.platform)}
-          </span>
+          <PlatformBadge platform={streamer.platform} />
           <span className="inline-block rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">
             {categoryLabel(streamer.category)}
           </span>
