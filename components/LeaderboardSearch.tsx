@@ -16,9 +16,15 @@ type Streamer = {
   clicks: number;
 };
 
-export default function LeaderboardSearch({ streamers }: { streamers: Streamer[] }) {
+export default function LeaderboardSearch({
+  streamers,
+  initialQuery,
+}: {
+  streamers: Streamer[];
+  initialQuery?: string;
+}) {
   const t = useTranslations("home");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery ?? "");
 
   const ranked = useMemo(() => streamers.map((s, i) => ({ ...s, rank: i + 1 })), [streamers]);
 

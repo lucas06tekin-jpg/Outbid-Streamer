@@ -16,10 +16,10 @@ export default async function HomePage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; q?: string }>;
 }) {
   const { locale } = await params;
-  const { category } = await searchParams;
+  const { category, q } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("home");
 
@@ -142,7 +142,7 @@ export default async function HomePage({
           ))}
         </div>
 
-        <LeaderboardSearch streamers={streamers} />
+        <LeaderboardSearch streamers={streamers} initialQuery={q} />
       </div>
     </div>
   );
