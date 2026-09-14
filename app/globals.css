@@ -50,9 +50,6 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-accent-foreground: var(--accent-foreground);
-  --color-gold: var(--gold);
-  --color-silver: var(--silver);
-  --color-bronze: var(--bronze);
   --color-live: var(--live);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
@@ -68,6 +65,31 @@ body {
 
 .stage-glow {
   background: radial-gradient(55% 55% at 50% 18%, var(--stage-glow), transparent 72%);
+}
+
+.rank-badge-1,
+.rank-badge-2,
+.rank-badge-3 {
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--rank-color) 55%, transparent);
+  background: radial-gradient(
+    circle at 32% 28%,
+    color-mix(in srgb, var(--rank-color) 55%, white 45%),
+    var(--rank-color) 72%
+  );
+  box-shadow: 0 0 14px 1px color-mix(in srgb, var(--rank-color) 50%, transparent);
+}
+
+.rank-badge-1 {
+  --rank-color: var(--gold);
+}
+
+.rank-badge-2 {
+  --rank-color: var(--silver);
+}
+
+.rank-badge-3 {
+  --rank-color: var(--bronze);
 }
 
 @layer components {

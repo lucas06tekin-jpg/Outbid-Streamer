@@ -6,9 +6,9 @@ import { categoryLabel } from "@/lib/categories";
 import PlatformBadge from "./PlatformBadge";
 
 const RANK_STYLES: Record<number, string> = {
-  1: "bg-gold text-accent-foreground",
-  2: "bg-silver text-accent-foreground",
-  3: "bg-bronze text-accent-foreground",
+  1: "rank-badge-1 text-white",
+  2: "rank-badge-2 text-white",
+  3: "rank-badge-3 text-white",
 };
 
 export default function LeaderboardRow({
@@ -40,8 +40,8 @@ export default function LeaderboardRow({
       }`}
     >
       <div
-        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-display text-sm font-bold ${
-          RANK_STYLES[rank] ?? "bg-surface-2 text-muted"
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-display text-sm font-bold [text-shadow:0_1px_2px_rgba(0,0,0,0.35)] ${
+          RANK_STYLES[rank] ?? "bg-surface-2 text-muted [text-shadow:none]"
         }`}
       >
         {rank}
