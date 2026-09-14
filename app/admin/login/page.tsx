@@ -22,7 +22,7 @@ export default async function AdminLoginPage({
           />
         </label>
         {error && (
-          <p className="rounded-md bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
+          <p className="rounded-md bg-red-950/40 border border-red-900 px-3 py-2 text-sm text-red-400">
             Fel lösenord.
           </p>
         )}

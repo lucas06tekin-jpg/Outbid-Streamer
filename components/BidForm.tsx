@@ -217,7 +217,7 @@ export default function BidForm({
           </label>
         </div>
         <p className="mt-1 text-xs text-muted">{t("logoHint")}</p>
-        {uploadError && <p className="mt-1 text-xs text-red-600">{uploadError}</p>}
+        {uploadError && <p className="mt-1 text-xs text-red-400">{uploadError}</p>}
       </Field>
 
       <Field label={t("email")} hint={t("emailHint")}>
@@ -281,7 +281,7 @@ export default function BidForm({
       </label>
 
       {error && (
-        <p className="rounded-md bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-md bg-red-950/40 border border-red-900 px-3 py-2 text-sm text-red-400">
           {error}
         </p>
       )}

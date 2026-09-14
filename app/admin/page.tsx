@@ -85,7 +85,7 @@ function Group({
                 )}
                 {showDelete && (
                   <form action={deleteAction.bind(null, s.id)}>
-                    <button className="rounded-md bg-red-50 border border-red-200 px-3 py-1.5 text-xs text-red-700 hover:bg-red-100">
+                    <button className="rounded-md bg-red-950/40 border border-red-900 px-3 py-1.5 text-xs text-red-400 hover:bg-red-950/70">
                       Radera (GDPR)
                     </button>
                   </form>

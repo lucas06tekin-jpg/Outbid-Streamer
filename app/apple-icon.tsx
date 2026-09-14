@@ -14,7 +14,7 @@ export default function AppleIcon() {
           alignItems: "flex-end",
           justifyContent: "center",
           gap: 17,
-          background: "#7c3aed",
+          background: "#f97316",
           borderRadius: 45,
           padding: "28px 34px",
         }}
