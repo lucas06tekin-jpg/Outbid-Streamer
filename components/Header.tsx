@@ -2,6 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
+import HedgehogMenu from "./HedgehogMenu";
 
 export default function Header() {
   const t = useTranslations("nav");
@@ -63,6 +64,7 @@ export default function Header() {
         </form>
 
         <div className="ml-auto flex shrink-0 items-center gap-2">
+          <HedgehogMenu />
           <ThemeToggle />
           <Link
             href="/admin"
