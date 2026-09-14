@@ -6,6 +6,7 @@ import { CATEGORIES, categoryLabel } from "@/lib/categories";
 import LeaderboardSearch from "@/components/LeaderboardSearch";
 import LiveDashboard from "@/components/LiveDashboard";
 import FeaturedStream from "@/components/FeaturedStream";
+import RunnerUpStream from "@/components/RunnerUpStream";
 import { getOnlineCount, getTotalViews, getLatestActivity } from "@/lib/stats";
 
 const INCREMENT_ORE = Number(process.env.MIN_BID_INCREMENT_ORE ?? 100);
@@ -22,7 +23,7 @@ export default async function HomePage({
   setRequestLocale(locale);
   const t = await getTranslations("home");
 
-  const [streamers, allPaidBids, topStreamer, onlineCount, totalViews, latestActivity] = await Promise.all([
+  const [streamers, allPaidBids, topStreamer, runnersUp, onlineCount, totalViews, latestActivity] = await Promise.all([
     prisma.streamer.findMany({
       where: {
         status: "PAID",
@@ -50,6 +51,13 @@ export default async function HomePage({
     prisma.streamer.findFirst({
       where: { status: "PAID" },
       orderBy: { currentBid: "desc" },
+      select: { id: true, slug: true, name: true, platform: true, url: true },
+    }),
+    prisma.streamer.findMany({
+      where: { status: "PAID" },
+      orderBy: { currentBid: "desc" },
+      skip: 1,
+      take: 2,
       select: { id: true, slug: true, name: true, platform: true, url: true },
     }),
     getOnlineCount(),
@@ -80,6 +88,14 @@ export default async function HomePage({
         {topStreamer && (
           <div className="mb-10 mx-auto max-w-3xl">
             <FeaturedStream streamer={topStreamer} parentHost={parentHost} />
+
+            {runnersUp.length > 0 && (
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {runnersUp.map((s, i) => (
+                  <RunnerUpStream key={s.id} streamer={s} rank={i + 2} parentHost={parentHost} />
+                ))}
+              </div>
+            )}
           </div>
         )}
 
