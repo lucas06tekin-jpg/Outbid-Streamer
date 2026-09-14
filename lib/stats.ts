@@ -35,6 +35,29 @@ export async function getTotalViews(): Promise<number> {
   return stat?.totalViews ?? 0;
 }
 
+export type SiteSummary = {
+  visitors: number;
+  revenueOre: number;
+  streamersAdded: number;
+  launchDate: string | null;
+};
+
+export async function getSiteSummary(): Promise<SiteSummary> {
+  const [visitors, revenue, streamersAdded, firstStreamer] = await Promise.all([
+    getTotalViews(),
+    prisma.bid.aggregate({ where: { status: "PAID" }, _sum: { amount: true } }),
+    prisma.streamer.count(),
+    prisma.streamer.findFirst({ orderBy: { createdAt: "asc" }, select: { createdAt: true } }),
+  ]);
+
+  return {
+    visitors,
+    revenueOre: revenue._sum.amount ?? 0,
+    streamersAdded,
+    launchDate: firstStreamer?.createdAt.toISOString() ?? null,
+  };
+}
+
 export type ActivityItem = {
   id: string;
   streamerName: string;

@@ -7,6 +7,7 @@ import LeaderboardSearch from "@/components/LeaderboardSearch";
 import LiveDashboard from "@/components/LiveDashboard";
 import FeaturedStream from "@/components/FeaturedStream";
 import RunnerUpStream from "@/components/RunnerUpStream";
+import SiteStatsFooter from "@/components/SiteStatsFooter";
 import { getOnlineCount, getTotalViews, getLatestActivity } from "@/lib/stats";
 
 const INCREMENT_ORE = Number(process.env.MIN_BID_INCREMENT_ORE ?? 100);
@@ -147,6 +148,8 @@ export default async function HomePage({
         </div>
 
         <LeaderboardSearch streamers={streamers} initialQuery={q} />
+
+        <SiteStatsFooter locale={locale} />
       </div>
     </div>
   );

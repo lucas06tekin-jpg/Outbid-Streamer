@@ -80,6 +80,12 @@
       "generic": "Något gick fel. Försök igen."
     }
   },
+  "siteSummary": {
+    "eyebrow": "Lite statistik om det här sidoprojektet sedan lanseringen {days, plural, =0 {idag} =1 {för 1 dag sedan} other {för # dagar sedan}}",
+    "visitors": "besökare",
+    "revenue": "intäkter",
+    "streamersAdded": "streamers tillagda"
+  },
   "featured": {
     "liveNow": "{name} streamar live nu",
     "noPreview": "Förhandsvisning stöds inte för den här plattformen än.",
