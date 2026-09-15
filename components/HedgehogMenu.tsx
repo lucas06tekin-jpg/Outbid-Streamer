@@ -22,6 +22,20 @@ function easeInOutQuad(t: number) {
   return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 }
 
+function HouseIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 56 46" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <ellipse cx="28" cy="42" rx="24" ry="3" fill="currentColor" opacity="0.12" />
+      <path
+        d="M3 40C3 22 12 8 28 8C44 8 53 22 53 40C53 41.1 52.1 42 51 42H5C3.9 42 3 41.1 3 40Z"
+        fill="#8a6a48"
+      />
+      <path d="M28 8C31.5 8 34.5 5 34.5 2C34.5 4.5 32.5 6 28 6C23.5 6 21.5 4.5 21.5 2C21.5 5 24.5 8 28 8Z" fill="#6f8f4a" />
+      <ellipse cx="28" cy="41" rx="13" ry="11" fill="#2c1d12" />
+    </svg>
+  );
+}
+
 function HedgehogIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 34" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
@@ -75,6 +89,7 @@ function spawnHearts(x: number, y: number) {
 export default function HedgehogMenu() {
   const [open, setOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [peeking, setPeeking] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const travelerRef = useRef<HTMLDivElement>(null);
@@ -267,6 +282,17 @@ export default function HedgehogMenu() {
     nextHop();
   }
 
+  function handleToggle() {
+    setOpen((o) => {
+      const next = !o;
+      if (next) {
+        setPeeking(true);
+        setTimeout(() => setPeeking(false), 500);
+      }
+      return next;
+    });
+  }
+
   function handleCheer() {
     setOpen(false);
     const rows = Array.from(document.querySelectorAll("[data-streamer-row]"));
@@ -281,17 +307,22 @@ export default function HedgehogMenu() {
   }
 
   return (
-    <div ref={wrapperRef} className="relative">
+    <div ref={wrapperRef} className="fixed right-4 top-20 z-40">
       <button
         ref={buttonRef}
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={handleToggle}
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Hedgehog menu"
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-2 transition hover:brightness-95"
+        aria-label="Hedgehog house"
+        className="relative block h-[46px] w-14 transition hover:brightness-95"
       >
-        <HedgehogIcon className="h-6 w-6" />
+        <HouseIcon className="h-full w-full text-foreground/40 drop-shadow" />
+        <HedgehogIcon
+          className={`absolute bottom-1 left-1/2 h-6 w-7 -translate-x-1/2 transition-transform duration-300 ${
+            peeking ? "translate-y-0" : "translate-y-1.5"
+          }`}
+        />
       </button>
 
       {open && (
