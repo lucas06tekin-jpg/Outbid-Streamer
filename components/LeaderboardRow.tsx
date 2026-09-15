@@ -35,6 +35,7 @@ export default function LeaderboardRow({
     <div
       data-streamer-row
       data-streamer-name={streamer.name}
+      data-streamer-slug={streamer.slug}
       className={`flex items-center gap-4 rounded-xl border px-4 py-4 sm:px-5 transition-colors ${
         rank === 1
           ? "border-accent/40 bg-accent-soft"

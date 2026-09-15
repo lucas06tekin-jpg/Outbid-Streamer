@@ -4,17 +4,22 @@ import { useEffect, useRef, useState } from "react";
 
 const PLACEHOLDER_ITEMS = ["Coming soon", "Coming soon", "Coming soon"];
 const HEART_COUNT = 7;
-const HOP_COUNT = 5;
-const HOP_DURATION_MS = 260;
-const HOP_GAP_MS = 90;
-const HOP_ARC_PX = 22;
+
+// Small, frequent hops rather than a few long leaps: each hop covers at most
+// HOP_STEP_PX, and the chain just keeps hopping until it's within reach.
+const HOP_STEP_PX = 70;
+const HOP_DURATION_MS = 170;
+const HOP_GAP_MS = 55;
+const HOP_ARC_PX = 13;
+const MAX_HOPS_SAFETY = 60;
+
 const JOY_HOP_COUNT = 7;
 const JOY_HOP_DURATION_MS = 150;
 const JOY_HOP_GAP_MS = 30;
 const JOY_HOP_ARC_PX = 9;
 const JOY_HOP_AMPLITUDE_PX = 13;
 const HIGHLIGHT_LIFETIME_MS = 2200;
-const SETTLE_FADE_DELAY_MS = 500;
+const RETURN_DELAY_MS = 400;
 const TRAVELER_HALF_WIDTH = 24;
 const TRAVELER_HALF_HEIGHT = 20;
 
@@ -86,8 +91,12 @@ function spawnHearts(x: number, y: number) {
   setTimeout(() => container.remove(), 1400 + HEART_COUNT * 55 + 100);
 }
 
+type StreamerOption = { name: string; slug: string };
+
 export default function HedgehogMenu() {
   const [open, setOpen] = useState(false);
+  const [view, setView] = useState<"main" | "pick">("main");
+  const [streamers, setStreamers] = useState<StreamerOption[]>([]);
   const [notice, setNotice] = useState<string | null>(null);
   const [peeking, setPeeking] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -95,8 +104,8 @@ export default function HedgehogMenu() {
   const travelerRef = useRef<HTMLDivElement>(null);
   const travelerFlipRef = useRef<HTMLDivElement>(null);
   const travelerBodyRef = useRef<HTMLDivElement>(null);
-  // Bumped on every new travel/dance run so a fresh "Cheer" click invalidates
-  // any still-running animation chain instead of fighting it for the same
+  // Bumped on every new travel/dance run so a fresh pick invalidates any
+  // still-running animation chain instead of fighting it for the same
   // traveler element.
   const runTokenRef = useRef(0);
 
@@ -135,13 +144,12 @@ export default function HedgehogMenu() {
 
   function celebrateAt(row: Element, x: number, y: number) {
     row.classList.add("hedgehog-cheer-highlight");
-    setTimeout(() => row.classList.remove("hedgehog-cheer-highlight"), HIGHLIGHT_LIFETIME_MS);
     spawnHearts(x, y);
   }
 
-  /** Animates the traveler in a single arced hop from (fromX, fromY) to (toX, toY),
-   *  calling onDone(toX, toY) once it lands. Aborts if `token` no longer matches
-   *  the current run (a newer "Cheer" click started a fresh animation chain). */
+  /** Animates the traveler in a single short arced hop from (fromX, fromY) to
+   *  (toX, toY), calling onDone(toX, toY) once it lands. Aborts if `token` no
+   *  longer matches the current run (a newer pick started a fresh chain). */
   function animateHop(
     token: number,
     fromX: number,
@@ -158,6 +166,7 @@ export default function HedgehogMenu() {
     if (!traveler || !flip || !body) return;
 
     flip.style.transform = `scaleX(${toX < fromX ? -1 : 1})`;
+    // eslint-disable-next-line react-hooks/purity -- animation timer start, read from an event/rAF callback, never during render
     const start = performance.now();
 
     const step = (now: number) => {
@@ -183,8 +192,57 @@ export default function HedgehogMenu() {
     requestAnimationFrame(step);
   }
 
-  /** Little happy side-to-side hop dance in place once the hedgehog arrives,
-   *  then it settles back to center and fades out. */
+  /** Hops in short, fixed-length steps toward a (possibly moving/scrolling)
+   *  target until within reach, then calls onArrive with the landing point. */
+  function hopChain(
+    token: number,
+    startX: number,
+    startY: number,
+    getTarget: () => { tx: number; ty: number },
+    onArrive: (x: number, y: number) => void
+  ) {
+    let x = startX;
+    let y = startY;
+    let safety = MAX_HOPS_SAFETY;
+
+    const step = () => {
+      if (runTokenRef.current !== token) return;
+      if (safety-- <= 0) {
+        onArrive(x, y);
+        return;
+      }
+
+      const { tx, ty } = getTarget();
+      const dx = tx - x;
+      const dy = ty - y;
+      const dist = Math.hypot(dx, dy);
+
+      if (dist < 2) {
+        onArrive(x, y);
+        return;
+      }
+
+      const hopDist = Math.min(HOP_STEP_PX, dist);
+      const nx = x + (dx / dist) * hopDist;
+      const ny = y + (dy / dist) * hopDist;
+      const isLast = hopDist >= dist - 0.5;
+
+      animateHop(token, x, y, nx, ny, HOP_DURATION_MS, HOP_ARC_PX, (ax, ay) => {
+        x = ax;
+        y = ay;
+        if (isLast) {
+          onArrive(x, y);
+        } else {
+          setTimeout(step, HOP_GAP_MS);
+        }
+      });
+    };
+
+    step();
+  }
+
+  /** Little happy side-to-side hop dance in place, then hops back home to the
+   *  house instead of just vanishing. */
   function joyDance(token: number, row: Element, centerX: number, centerY: number) {
     let hopsLeft = JOY_HOP_COUNT;
     let x = centerX;
@@ -195,10 +253,7 @@ export default function HedgehogMenu() {
       if (runTokenRef.current !== token) return;
       animateHop(token, x, y, centerX, centerY, JOY_HOP_DURATION_MS, JOY_HOP_ARC_PX * 0.6, () => {
         row.classList.remove("hedgehog-cheer-highlight");
-        const traveler = travelerRef.current;
-        setTimeout(() => {
-          if (runTokenRef.current === token && traveler) traveler.style.opacity = "0";
-        }, SETTLE_FADE_DELAY_MS);
+        setTimeout(() => hopHome(token, centerX, centerY), RETURN_DELAY_MS);
       });
     };
 
@@ -224,6 +279,21 @@ export default function HedgehogMenu() {
     nextJoyHop();
   }
 
+  /** Hops back to the house (short hops, same as the trip out) and disappears
+   *  into the doorway on arrival instead of fading in place. */
+  function hopHome(token: number, fromX: number, fromY: number) {
+    hopChain(token, fromX, fromY, () => {
+      const btn = buttonRef.current;
+      if (!btn) return { tx: fromX, ty: fromY };
+      const rect = btn.getBoundingClientRect();
+      return { tx: rect.left + rect.width / 2, ty: rect.top + rect.height / 2 };
+    }, () => {
+      if (runTokenRef.current !== token) return;
+      const traveler = travelerRef.current;
+      if (traveler) traveler.style.opacity = "0";
+    });
+  }
+
   function travelTo(row: Element) {
     const avatar = row.querySelector("[data-streamer-avatar]") ?? row;
     const btn = buttonRef.current;
@@ -234,10 +304,10 @@ export default function HedgehogMenu() {
     const token = runTokenRef.current;
 
     const startRect = btn.getBoundingClientRect();
-    let x = startRect.left + startRect.width / 2;
-    let y = startRect.top + startRect.height / 2;
+    const startX = startRect.left + startRect.width / 2;
+    const startY = startRect.top + startRect.height / 2;
 
-    traveler.style.transform = `translate(${x - TRAVELER_HALF_WIDTH}px, ${y - TRAVELER_HALF_HEIGHT}px)`;
+    traveler.style.transform = `translate(${startX - TRAVELER_HALF_WIDTH}px, ${startY - TRAVELER_HALF_HEIGHT}px)`;
     traveler.style.opacity = "1";
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -248,62 +318,76 @@ export default function HedgehogMenu() {
       traveler.style.transform = `translate(${tx - TRAVELER_HALF_WIDTH}px, ${ty - TRAVELER_HALF_HEIGHT}px)`;
       celebrateAt(row, tx, ty);
       setTimeout(() => {
+        row.classList.remove("hedgehog-cheer-highlight");
         if (runTokenRef.current === token) traveler.style.opacity = "0";
       }, HIGHLIGHT_LIFETIME_MS);
       return;
     }
 
-    let hopsLeft = HOP_COUNT;
+    hopChain(
+      token,
+      startX,
+      startY,
+      () => {
+        const rect = avatar.getBoundingClientRect();
+        return { tx: rect.left + rect.width / 2, ty: rect.top + rect.height / 2 };
+      },
+      (x, y) => {
+        celebrateAt(row, x, y);
+        joyDance(token, row, x, y);
+      }
+    );
+  }
 
-    const nextHop = () => {
-      if (runTokenRef.current !== token) return;
-      const rect = avatar.getBoundingClientRect();
-      const tx = rect.left + rect.width / 2;
-      const ty = rect.top + rect.height / 2;
+  function findStreamerRows(): StreamerOption[] {
+    return Array.from(document.querySelectorAll<HTMLElement>("[data-streamer-row]")).map((el) => ({
+      name: el.dataset.streamerName ?? "",
+      slug: el.dataset.streamerSlug ?? "",
+    }));
+  }
 
-      hopsLeft -= 1;
-      const isLast = hopsLeft <= 0;
-      const fraction = isLast ? 1 : 1 / (hopsLeft + 1);
-      const hopTargetX = x + (tx - x) * fraction;
-      const hopTargetY = y + (ty - y) * fraction;
+  function goToRow(slug: string) {
+    const row = document.querySelector(`[data-streamer-row][data-streamer-slug="${CSS.escape(slug)}"]`);
+    if (!row) return;
+    row.scrollIntoView({ behavior: "smooth", block: "center" });
+    window.setTimeout(() => travelTo(row), 350);
+  }
 
-      animateHop(token, x, y, hopTargetX, hopTargetY, HOP_DURATION_MS, HOP_ARC_PX, (nx, ny) => {
-        x = nx;
-        y = ny;
-        if (isLast) {
-          celebrateAt(row, x, y);
-          joyDance(token, row, x, y);
-        } else {
-          setTimeout(nextHop, HOP_GAP_MS);
-        }
-      });
-    };
+  function openPicker() {
+    const found = findStreamerRows();
+    if (found.length === 0) {
+      setOpen(false);
+      setNotice("Visit the leaderboard to cheer for a streamer!");
+      return;
+    }
+    setStreamers(found);
+    setView("pick");
+  }
 
-    nextHop();
+  function handlePickRandom() {
+    setOpen(false);
+    const rows = Array.from(document.querySelectorAll("[data-streamer-row]"));
+    if (rows.length === 0) return;
+    // eslint-disable-next-line react-hooks/purity -- picking a random row from a click handler, never during render
+    const row = rows[Math.floor(Math.random() * rows.length)] as HTMLElement;
+    goToRow(row.dataset.streamerSlug ?? "");
+  }
+
+  function handlePickStreamer(slug: string) {
+    setOpen(false);
+    goToRow(slug);
   }
 
   function handleToggle() {
     setOpen((o) => {
       const next = !o;
       if (next) {
+        setView("main");
         setPeeking(true);
         setTimeout(() => setPeeking(false), 500);
       }
       return next;
     });
-  }
-
-  function handleCheer() {
-    setOpen(false);
-    const rows = Array.from(document.querySelectorAll("[data-streamer-row]"));
-    if (rows.length === 0) {
-      setNotice("Visit the leaderboard to cheer for a streamer!");
-      return;
-    }
-
-    const row = rows[Math.floor(Math.random() * rows.length)];
-    row.scrollIntoView({ behavior: "smooth", block: "center" });
-    window.setTimeout(() => travelTo(row), 350);
   }
 
   return (
@@ -325,7 +409,7 @@ export default function HedgehogMenu() {
         />
       </button>
 
-      {open && (
+      {open && view === "main" && (
         <div
           role="menu"
           className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-xl border border-border bg-surface py-1.5 shadow-lg"
@@ -333,7 +417,7 @@ export default function HedgehogMenu() {
           <button
             type="button"
             role="menuitem"
-            onClick={handleCheer}
+            onClick={openPicker}
             className="block w-full px-4 py-2 text-left text-sm text-foreground transition hover:bg-surface-2"
           >
             🎉 Cheer for a streamer
@@ -349,6 +433,42 @@ export default function HedgehogMenu() {
               {label}
             </button>
           ))}
+        </div>
+      )}
+
+      {open && view === "pick" && (
+        <div
+          role="menu"
+          className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-xl border border-border bg-surface py-1.5 shadow-lg"
+        >
+          <button
+            type="button"
+            onClick={() => setView("main")}
+            className="flex w-full items-center gap-1.5 px-4 py-2 text-left text-xs text-muted transition hover:bg-surface-2"
+          >
+            ← Back
+          </button>
+          <div className="max-h-64 overflow-y-auto border-t border-border py-1">
+            <button
+              type="button"
+              role="menuitem"
+              onClick={handlePickRandom}
+              className="block w-full px-4 py-2 text-left text-sm font-medium text-accent transition hover:bg-surface-2"
+            >
+              🎲 Surprise me
+            </button>
+            {streamers.map((s) => (
+              <button
+                key={s.slug}
+                type="button"
+                role="menuitem"
+                onClick={() => handlePickStreamer(s.slug)}
+                className="block w-full truncate px-4 py-2 text-left text-sm text-foreground transition hover:bg-surface-2"
+              >
+                {s.name}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
