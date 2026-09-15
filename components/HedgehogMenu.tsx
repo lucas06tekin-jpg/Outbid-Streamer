@@ -4,8 +4,18 @@ import { useEffect, useRef, useState } from "react";
 
 const PLACEHOLDER_ITEMS = ["Coming soon", "Coming soon", "Coming soon"];
 const HEART_COUNT = 7;
-const HEART_LIFETIME_MS = 1400;
+const HOP_COUNT = 5;
+const HOP_DURATION_MS = 260;
+const HOP_GAP_MS = 90;
+const HOP_ARC_PX = 22;
 const HIGHLIGHT_LIFETIME_MS = 1500;
+const ARRIVAL_LINGER_MS = 900;
+const TRAVELER_HALF_WIDTH = 24;
+const TRAVELER_HALF_HEIGHT = 20;
+
+function easeInOutQuad(t: number) {
+  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+}
 
 function HedgehogIcon({ className }: { className?: string }) {
   return (
@@ -31,8 +41,7 @@ function HedgehogIcon({ className }: { className?: string }) {
   );
 }
 
-function spawnHearts(target: Element) {
-  const rect = target.getBoundingClientRect();
+function spawnHearts(x: number, y: number) {
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reducedMotion) return;
 
@@ -47,33 +56,26 @@ function spawnHearts(target: Element) {
     const heart = document.createElement("span");
     heart.textContent = "❤";
     heart.className = "hedgehog-cheer-heart";
-    heart.style.left = `${rect.left + rect.width * (0.15 + Math.random() * 0.7)}px`;
-    heart.style.top = `${rect.top + rect.height * 0.3}px`;
+    heart.style.left = `${x + (Math.random() - 0.5) * 44}px`;
+    heart.style.top = `${y}px`;
     heart.style.setProperty("--drift", `${(Math.random() - 0.5) * 60}px`);
     heart.style.animationDelay = `${i * 55}ms`;
     heart.style.fontSize = `${14 + Math.random() * 10}px`;
     container.appendChild(heart);
   }
 
-  setTimeout(() => container.remove(), HEART_LIFETIME_MS + HEART_COUNT * 55 + 100);
-}
-
-function cheerForRandomStreamer() {
-  const rows = Array.from(document.querySelectorAll("[data-streamer-row]"));
-  if (rows.length === 0) return false;
-
-  const row = rows[Math.floor(Math.random() * rows.length)];
-  row.scrollIntoView({ behavior: "smooth", block: "center" });
-  row.classList.add("hedgehog-cheer-highlight");
-  setTimeout(() => row.classList.remove("hedgehog-cheer-highlight"), HIGHLIGHT_LIFETIME_MS);
-  window.setTimeout(() => spawnHearts(row), 250);
-  return true;
+  setTimeout(() => container.remove(), 1400 + HEART_COUNT * 55 + 100);
 }
 
 export default function HedgehogMenu() {
   const [open, setOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const travelerRef = useRef<HTMLDivElement>(null);
+  const travelerFlipRef = useRef<HTMLDivElement>(null);
+  const travelerBodyRef = useRef<HTMLDivElement>(null);
+  const cancelRef = useRef(false);
 
   useEffect(() => {
     if (!open) return;
@@ -102,17 +104,117 @@ export default function HedgehogMenu() {
     return () => clearTimeout(timer);
   }, [notice]);
 
+  useEffect(() => {
+    return () => {
+      cancelRef.current = true;
+    };
+  }, []);
+
+  function celebrateAt(row: Element, x: number, y: number) {
+    row.classList.add("hedgehog-cheer-highlight");
+    setTimeout(() => row.classList.remove("hedgehog-cheer-highlight"), HIGHLIGHT_LIFETIME_MS);
+    spawnHearts(x, y);
+  }
+
+  function travelTo(row: Element) {
+    const avatar = row.querySelector("[data-streamer-avatar]") ?? row;
+    const btn = buttonRef.current;
+    const traveler = travelerRef.current;
+    const flip = travelerFlipRef.current;
+    const body = travelerBodyRef.current;
+    if (!btn || !traveler || !flip || !body) return;
+
+    cancelRef.current = false;
+
+    const startRect = btn.getBoundingClientRect();
+    let x = startRect.left + startRect.width / 2;
+    let y = startRect.top + startRect.height / 2;
+
+    traveler.style.transform = `translate(${x - TRAVELER_HALF_WIDTH}px, ${y - TRAVELER_HALF_HEIGHT}px)`;
+    traveler.style.opacity = "1";
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion) {
+      const rect = avatar.getBoundingClientRect();
+      const tx = rect.left + rect.width / 2;
+      const ty = rect.top + rect.height / 2;
+      traveler.style.transform = `translate(${tx - TRAVELER_HALF_WIDTH}px, ${ty - TRAVELER_HALF_HEIGHT}px)`;
+      celebrateAt(row, tx, ty);
+      setTimeout(() => {
+        traveler.style.opacity = "0";
+      }, ARRIVAL_LINGER_MS);
+      return;
+    }
+
+    let hopsLeft = HOP_COUNT;
+
+    const nextHop = () => {
+      if (cancelRef.current) return;
+      const rect = avatar.getBoundingClientRect();
+      const tx = rect.left + rect.width / 2;
+      const ty = rect.top + rect.height / 2;
+
+      hopsLeft -= 1;
+      const isLast = hopsLeft <= 0;
+      const fraction = isLast ? 1 : 1 / (hopsLeft + 1);
+      const hopTargetX = x + (tx - x) * fraction;
+      const hopTargetY = y + (ty - y) * fraction;
+
+      flip.style.transform = `scaleX(${hopTargetX < x ? -1 : 1})`;
+      const startX = x;
+      const startY = y;
+      const start = performance.now();
+
+      const step = (now: number) => {
+        if (cancelRef.current) return;
+        const progress = Math.min(1, (now - start) / HOP_DURATION_MS);
+        const eased = easeInOutQuad(progress);
+        x = startX + (hopTargetX - startX) * eased;
+        y = startY + (hopTargetY - startY) * eased;
+        const arc = Math.sin(progress * Math.PI) * HOP_ARC_PX;
+        const squash = 1 - Math.sin(progress * Math.PI) * 0.18;
+
+        traveler.style.transform = `translate(${x - TRAVELER_HALF_WIDTH}px, ${y - arc - TRAVELER_HALF_HEIGHT}px)`;
+        body.style.transform = `scaleY(${squash}) scaleX(${1 + (1 - squash) * 0.6})`;
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          body.style.transform = "scaleY(1) scaleX(1)";
+          if (isLast) {
+            celebrateAt(row, x, y);
+            setTimeout(() => {
+              if (!cancelRef.current) traveler.style.opacity = "0";
+            }, ARRIVAL_LINGER_MS);
+          } else {
+            setTimeout(nextHop, HOP_GAP_MS);
+          }
+        }
+      };
+
+      requestAnimationFrame(step);
+    };
+
+    nextHop();
+  }
+
   function handleCheer() {
     setOpen(false);
-    const found = cheerForRandomStreamer();
-    if (!found) {
+    const rows = Array.from(document.querySelectorAll("[data-streamer-row]"));
+    if (rows.length === 0) {
       setNotice("Visit the leaderboard to cheer for a streamer!");
+      return;
     }
+
+    const row = rows[Math.floor(Math.random() * rows.length)];
+    row.scrollIntoView({ behavior: "smooth", block: "center" });
+    window.setTimeout(() => travelTo(row), 350);
   }
 
   return (
     <div ref={wrapperRef} className="relative">
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="menu"
@@ -158,6 +260,19 @@ export default function HedgehogMenu() {
           {notice}
         </div>
       )}
+
+      <div
+        ref={travelerRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed left-0 top-0 z-50 opacity-0 transition-opacity duration-300"
+        style={{ willChange: "transform" }}
+      >
+        <div ref={travelerFlipRef}>
+          <div ref={travelerBodyRef} style={{ transformOrigin: "50% 100%" }}>
+            <HedgehogIcon className="h-10 w-12" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

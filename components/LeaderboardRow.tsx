@@ -49,7 +49,7 @@ export default function LeaderboardRow({
         {rank}
       </div>
 
-      <div className="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-surface-2">
+      <div data-streamer-avatar className="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-surface-2">
         {streamer.imageUrl ? (
           <Image
             src={streamer.imageUrl}
