@@ -131,11 +131,47 @@ body {
   animation: toast-in 0.25s ease-out;
 }
 
+@keyframes cheer-float {
+  0% {
+    transform: translate(0, 0) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--drift, 10px), -70px) scale(1.15);
+    opacity: 0;
+  }
+}
+
+.hedgehog-cheer-heart {
+  position: fixed;
+  color: var(--accent);
+  animation: cheer-float 1.4s ease-out forwards;
+}
+
+@keyframes cheer-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 14px color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+}
+
+.hedgehog-cheer-highlight {
+  animation: cheer-pulse 1.5s ease-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-ping {
     animation: none;
   }
   .animate-toast-in {
+    animation: none;
+  }
+  .hedgehog-cheer-highlight {
     animation: none;
   }
 }

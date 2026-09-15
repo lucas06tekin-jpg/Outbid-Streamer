@@ -2,7 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const MENU_ITEMS = ["Coming soon", "Coming soon", "Coming soon", "Coming soon"];
+const PLACEHOLDER_ITEMS = ["Coming soon", "Coming soon", "Coming soon"];
+const HEART_COUNT = 7;
+const HEART_LIFETIME_MS = 1400;
+const HIGHLIGHT_LIFETIME_MS = 1500;
 
 function HedgehogIcon({ className }: { className?: string }) {
   return (
@@ -28,8 +31,48 @@ function HedgehogIcon({ className }: { className?: string }) {
   );
 }
 
+function spawnHearts(target: Element) {
+  const rect = target.getBoundingClientRect();
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reducedMotion) return;
+
+  const container = document.createElement("div");
+  container.style.position = "fixed";
+  container.style.inset = "0";
+  container.style.pointerEvents = "none";
+  container.style.zIndex = "60";
+  document.body.appendChild(container);
+
+  for (let i = 0; i < HEART_COUNT; i++) {
+    const heart = document.createElement("span");
+    heart.textContent = "❤";
+    heart.className = "hedgehog-cheer-heart";
+    heart.style.left = `${rect.left + rect.width * (0.15 + Math.random() * 0.7)}px`;
+    heart.style.top = `${rect.top + rect.height * 0.3}px`;
+    heart.style.setProperty("--drift", `${(Math.random() - 0.5) * 60}px`);
+    heart.style.animationDelay = `${i * 55}ms`;
+    heart.style.fontSize = `${14 + Math.random() * 10}px`;
+    container.appendChild(heart);
+  }
+
+  setTimeout(() => container.remove(), HEART_LIFETIME_MS + HEART_COUNT * 55 + 100);
+}
+
+function cheerForRandomStreamer() {
+  const rows = Array.from(document.querySelectorAll("[data-streamer-row]"));
+  if (rows.length === 0) return false;
+
+  const row = rows[Math.floor(Math.random() * rows.length)];
+  row.scrollIntoView({ behavior: "smooth", block: "center" });
+  row.classList.add("hedgehog-cheer-highlight");
+  setTimeout(() => row.classList.remove("hedgehog-cheer-highlight"), HIGHLIGHT_LIFETIME_MS);
+  window.setTimeout(() => spawnHearts(row), 250);
+  return true;
+}
+
 export default function HedgehogMenu() {
   const [open, setOpen] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -53,6 +96,20 @@ export default function HedgehogMenu() {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!notice) return;
+    const timer = setTimeout(() => setNotice(null), 2200);
+    return () => clearTimeout(timer);
+  }, [notice]);
+
+  function handleCheer() {
+    setOpen(false);
+    const found = cheerForRandomStreamer();
+    if (!found) {
+      setNotice("Visit the leaderboard to cheer for a streamer!");
+    }
+  }
+
   return (
     <div ref={wrapperRef} className="relative">
       <button
@@ -69,9 +126,17 @@ export default function HedgehogMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-xl border border-border bg-surface py-1.5 shadow-lg"
+          className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-xl border border-border bg-surface py-1.5 shadow-lg"
         >
-          {MENU_ITEMS.map((label, i) => (
+          <button
+            type="button"
+            role="menuitem"
+            onClick={handleCheer}
+            className="block w-full px-4 py-2 text-left text-sm text-foreground transition hover:bg-surface-2"
+          >
+            🎉 Cheer for a streamer
+          </button>
+          {PLACEHOLDER_ITEMS.map((label, i) => (
             <button
               key={i}
               type="button"
@@ -82,6 +147,15 @@ export default function HedgehogMenu() {
               {label}
             </button>
           ))}
+        </div>
+      )}
+
+      {notice && (
+        <div
+          role="status"
+          className="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-border bg-surface px-4 py-2.5 text-xs text-muted shadow-lg"
+        >
+          {notice}
         </div>
       )}
     </div>
