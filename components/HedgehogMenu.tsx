@@ -8,8 +8,13 @@ const HOP_COUNT = 5;
 const HOP_DURATION_MS = 260;
 const HOP_GAP_MS = 90;
 const HOP_ARC_PX = 22;
-const HIGHLIGHT_LIFETIME_MS = 1500;
-const ARRIVAL_LINGER_MS = 900;
+const JOY_HOP_COUNT = 7;
+const JOY_HOP_DURATION_MS = 150;
+const JOY_HOP_GAP_MS = 30;
+const JOY_HOP_ARC_PX = 9;
+const JOY_HOP_AMPLITUDE_PX = 13;
+const HIGHLIGHT_LIFETIME_MS = 2200;
+const SETTLE_FADE_DELAY_MS = 500;
 const TRAVELER_HALF_WIDTH = 24;
 const TRAVELER_HALF_HEIGHT = 20;
 
@@ -75,7 +80,10 @@ export default function HedgehogMenu() {
   const travelerRef = useRef<HTMLDivElement>(null);
   const travelerFlipRef = useRef<HTMLDivElement>(null);
   const travelerBodyRef = useRef<HTMLDivElement>(null);
-  const cancelRef = useRef(false);
+  // Bumped on every new travel/dance run so a fresh "Cheer" click invalidates
+  // any still-running animation chain instead of fighting it for the same
+  // traveler element.
+  const runTokenRef = useRef(0);
 
   useEffect(() => {
     if (!open) return;
@@ -106,7 +114,7 @@ export default function HedgehogMenu() {
 
   useEffect(() => {
     return () => {
-      cancelRef.current = true;
+      runTokenRef.current += 1;
     };
   }, []);
 
@@ -116,15 +124,99 @@ export default function HedgehogMenu() {
     spawnHearts(x, y);
   }
 
+  /** Animates the traveler in a single arced hop from (fromX, fromY) to (toX, toY),
+   *  calling onDone(toX, toY) once it lands. Aborts if `token` no longer matches
+   *  the current run (a newer "Cheer" click started a fresh animation chain). */
+  function animateHop(
+    token: number,
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number,
+    duration: number,
+    arcPx: number,
+    onDone: (x: number, y: number) => void
+  ) {
+    const traveler = travelerRef.current;
+    const flip = travelerFlipRef.current;
+    const body = travelerBodyRef.current;
+    if (!traveler || !flip || !body) return;
+
+    flip.style.transform = `scaleX(${toX < fromX ? -1 : 1})`;
+    const start = performance.now();
+
+    const step = (now: number) => {
+      if (runTokenRef.current !== token) return;
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = easeInOutQuad(progress);
+      const x = fromX + (toX - fromX) * eased;
+      const y = fromY + (toY - fromY) * eased;
+      const arc = Math.sin(progress * Math.PI) * arcPx;
+      const squash = 1 - Math.sin(progress * Math.PI) * 0.18;
+
+      traveler.style.transform = `translate(${x - TRAVELER_HALF_WIDTH}px, ${y - arc - TRAVELER_HALF_HEIGHT}px)`;
+      body.style.transform = `scaleY(${squash}) scaleX(${1 + (1 - squash) * 0.6})`;
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        body.style.transform = "scaleY(1) scaleX(1)";
+        onDone(toX, toY);
+      }
+    };
+
+    requestAnimationFrame(step);
+  }
+
+  /** Little happy side-to-side hop dance in place once the hedgehog arrives,
+   *  then it settles back to center and fades out. */
+  function joyDance(token: number, row: Element, centerX: number, centerY: number) {
+    let hopsLeft = JOY_HOP_COUNT;
+    let x = centerX;
+    let y = centerY;
+    let direction = 1;
+
+    const settle = () => {
+      if (runTokenRef.current !== token) return;
+      animateHop(token, x, y, centerX, centerY, JOY_HOP_DURATION_MS, JOY_HOP_ARC_PX * 0.6, () => {
+        row.classList.remove("hedgehog-cheer-highlight");
+        const traveler = travelerRef.current;
+        setTimeout(() => {
+          if (runTokenRef.current === token && traveler) traveler.style.opacity = "0";
+        }, SETTLE_FADE_DELAY_MS);
+      });
+    };
+
+    const nextJoyHop = () => {
+      if (runTokenRef.current !== token) return;
+      if (hopsLeft <= 0) {
+        settle();
+        return;
+      }
+      hopsLeft -= 1;
+      const targetX = centerX + direction * JOY_HOP_AMPLITUDE_PX;
+      direction *= -1;
+      animateHop(token, x, y, targetX, centerY, JOY_HOP_DURATION_MS, JOY_HOP_ARC_PX, (nx, ny) => {
+        x = nx;
+        y = ny;
+        setTimeout(nextJoyHop, JOY_HOP_GAP_MS);
+      });
+    };
+
+    // Re-highlight for the duration of the joy dance so the celebration reads
+    // as one continuous moment rather than fading right after the hearts.
+    row.classList.add("hedgehog-cheer-highlight");
+    nextJoyHop();
+  }
+
   function travelTo(row: Element) {
     const avatar = row.querySelector("[data-streamer-avatar]") ?? row;
     const btn = buttonRef.current;
     const traveler = travelerRef.current;
-    const flip = travelerFlipRef.current;
-    const body = travelerBodyRef.current;
-    if (!btn || !traveler || !flip || !body) return;
+    if (!btn || !traveler) return;
 
-    cancelRef.current = false;
+    runTokenRef.current += 1;
+    const token = runTokenRef.current;
 
     const startRect = btn.getBoundingClientRect();
     let x = startRect.left + startRect.width / 2;
@@ -141,15 +233,15 @@ export default function HedgehogMenu() {
       traveler.style.transform = `translate(${tx - TRAVELER_HALF_WIDTH}px, ${ty - TRAVELER_HALF_HEIGHT}px)`;
       celebrateAt(row, tx, ty);
       setTimeout(() => {
-        traveler.style.opacity = "0";
-      }, ARRIVAL_LINGER_MS);
+        if (runTokenRef.current === token) traveler.style.opacity = "0";
+      }, HIGHLIGHT_LIFETIME_MS);
       return;
     }
 
     let hopsLeft = HOP_COUNT;
 
     const nextHop = () => {
-      if (cancelRef.current) return;
+      if (runTokenRef.current !== token) return;
       const rect = avatar.getBoundingClientRect();
       const tx = rect.left + rect.width / 2;
       const ty = rect.top + rect.height / 2;
@@ -160,39 +252,16 @@ export default function HedgehogMenu() {
       const hopTargetX = x + (tx - x) * fraction;
       const hopTargetY = y + (ty - y) * fraction;
 
-      flip.style.transform = `scaleX(${hopTargetX < x ? -1 : 1})`;
-      const startX = x;
-      const startY = y;
-      const start = performance.now();
-
-      const step = (now: number) => {
-        if (cancelRef.current) return;
-        const progress = Math.min(1, (now - start) / HOP_DURATION_MS);
-        const eased = easeInOutQuad(progress);
-        x = startX + (hopTargetX - startX) * eased;
-        y = startY + (hopTargetY - startY) * eased;
-        const arc = Math.sin(progress * Math.PI) * HOP_ARC_PX;
-        const squash = 1 - Math.sin(progress * Math.PI) * 0.18;
-
-        traveler.style.transform = `translate(${x - TRAVELER_HALF_WIDTH}px, ${y - arc - TRAVELER_HALF_HEIGHT}px)`;
-        body.style.transform = `scaleY(${squash}) scaleX(${1 + (1 - squash) * 0.6})`;
-
-        if (progress < 1) {
-          requestAnimationFrame(step);
+      animateHop(token, x, y, hopTargetX, hopTargetY, HOP_DURATION_MS, HOP_ARC_PX, (nx, ny) => {
+        x = nx;
+        y = ny;
+        if (isLast) {
+          celebrateAt(row, x, y);
+          joyDance(token, row, x, y);
         } else {
-          body.style.transform = "scaleY(1) scaleX(1)";
-          if (isLast) {
-            celebrateAt(row, x, y);
-            setTimeout(() => {
-              if (!cancelRef.current) traveler.style.opacity = "0";
-            }, ARRIVAL_LINGER_MS);
-          } else {
-            setTimeout(nextHop, HOP_GAP_MS);
-          }
+          setTimeout(nextHop, HOP_GAP_MS);
         }
-      };
-
-      requestAnimationFrame(step);
+      });
     };
 
     nextHop();
